@@ -1,9 +1,6 @@
 package com.hzgc.manage.service;
 
-import com.hzgc.manage.dto.UserDto;
-import com.hzgc.manage.dto.UserUpdateDto;
-import com.hzgc.manage.dto.UserLoginDto;
-import com.hzgc.manage.dto.UserPwdDto;
+import com.hzgc.manage.dto.*;
 import com.hzgc.manage.entity.Log;
 import com.hzgc.manage.entity.User;
 import org.springframework.data.domain.Page;
@@ -40,7 +37,7 @@ public interface UserService {
     /**
      * 新增User实体
      */
-    void insert(UserUpdateDto userUpdateDto, Log log);
+    void insert(UserCreateDto userCreateDto, Log log);
 
     /**
      * 根据ID删除User实体
