@@ -25,9 +25,7 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Page<Person> findPageByXmSfz(PersonQueryDto personQueryDto, Pageable pageable, Log log) {
-
             return personRepository.findBySfzLikeOrXmLike(personQueryDto.getSfz(),personQueryDto.getXm(),pageable);
-
     }
 
     @Override
