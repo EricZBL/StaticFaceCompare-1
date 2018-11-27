@@ -21,6 +21,9 @@ public class UserServiceImplTest {
     @Autowired
     private PersonRepository personRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Test
     public void insert() {
 
@@ -75,6 +78,7 @@ public class UserServiceImplTest {
 
     @Test
     public void save() {
+        userRepository.deleteById("6cad4c8f-ea58-4848-b5d1-4165c3b2c39b");
 
     }
 

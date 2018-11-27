@@ -35,22 +35,20 @@ public class LogQueryDto implements Serializable {
     /**
      * 用户创建时间
      */
-    @Field( type = FieldType.Date, format = DateFormat.custom,pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern ="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @Field( type = FieldType.Date, format = DateFormat.custom,pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern ="yyyy-MM-dd",timezone="GMT+8")
     private Date createtime;
 
     /**
      * 当前页
      */
-    @NotEmpty(message = "页码不能为空")
     @ApiModelProperty(value="当前页码",name="page",example="0")
-    private int page;
+    private Integer page;
 
     /**
      * 每页大小
      */
-    @NotEmpty(message = "每页大小不能为空")
     @ApiModelProperty(value="每页大小",name="size",example="10")
-    private int size;
+    private Integer size;
 
 }

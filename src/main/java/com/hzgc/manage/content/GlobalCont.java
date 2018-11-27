@@ -15,4 +15,9 @@ public class GlobalCont {
      * 用户默认加密的盐值
      */
     public static String  DEFALUT_USER_SALT = "1a2b3c4d";
+
+    /**
+     * 管理员账号
+     */
+    public static String  DEFALUT_USER_ADMIIN = "admin";
 }

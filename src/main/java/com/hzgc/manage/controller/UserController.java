@@ -67,17 +67,17 @@ public class UserController {
 
     @ApiOperation(value = "新增账号")
     @RequestMapping(value = "save", method = RequestMethod.POST)
-    public ResultVO<String> insert(@RequestBody @Valid UserUpdateDto userUpdateDto) {
+    public ResultVO<String> insert(@RequestBody @Valid UserCreateDto userCreateDto) {
 
-        Log log = new Log(userUpdateDto.getUserId(), AnnUtils.getApiValue(USER_CONTROLLER_CLASS_NAME, "insert"));
-                 userService.insert(userUpdateDto,log);
+        Log log = new Log(userCreateDto.getUserId(), AnnUtils.getApiValue(USER_CONTROLLER_CLASS_NAME, "insert"));
+                 userService.insert(userCreateDto,log);
         return ResultUtils.success();
     }
 
     @ApiOperation(value = "查询单一账号")
-    @RequestMapping(value = "info", method = RequestMethod.GET)
-    public ResultVO<User> info( @ApiParam(name="userid",value="登录账号id",required=true) String userid,
-                                @ApiParam(name="id",value="账号id",required=true) String id) {
+    @RequestMapping(value = "info", method = RequestMethod.POST)
+    public ResultVO<User> info(@RequestParam("userid") @ApiParam(name="userid",value="登录账号id",required=true) String userid,
+                               @RequestParam("id") @ApiParam(name="id",value="账号id",required=true) String id) {
 
         Log log = new Log(userid, AnnUtils.getApiValue(USER_CONTROLLER_CLASS_NAME, "info"));
         User user = userService.findById(new UserDto(userid, id), log);

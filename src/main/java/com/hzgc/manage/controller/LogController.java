@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.validation.Valid;
+
 /**
  * 日志服务web层
  * created by liang on 18-11-20
@@ -31,7 +33,7 @@ public class LogController {
 
     @ApiOperation(value = "查询日志分页列表")
     @RequestMapping(value = "pageList", method = RequestMethod.POST)
-    public ResultVO<Page> pageList(@RequestBody LogQueryDto logQueryDto){
+    public ResultVO<Page> pageList(@RequestBody @Valid LogQueryDto logQueryDto){
 
             Pageable pageable = PageRequest.of(logQueryDto.getPage(), logQueryDto.getSize());
             Page<Log> page = logService.findPage(logQueryDto, pageable);

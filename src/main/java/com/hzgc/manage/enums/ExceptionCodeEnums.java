@@ -15,9 +15,14 @@ public enum ExceptionCodeEnums {
 
     USERNAME_ISNOT_BLANK(400 , "账号名称不能为空"),
 
+    USERNAME_ISNOT_MATCH(400 , "原始密码输入错误"),
+
     USERPWD_ISNOT_MATCH(401 , "账号名称或密码不正确"),
 
     USER_IS_DISABLE(403 , "账号已被禁用"),
+    USER_IS_EXIST(400 , "账号已存在"),
+
+    USER_ADMIN_ISNOT_OPERATRE(403 , "不允许操作admin账户"),
     ;
 
     private Integer code;

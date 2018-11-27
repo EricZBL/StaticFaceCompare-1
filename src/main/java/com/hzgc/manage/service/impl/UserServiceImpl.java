@@ -1,16 +1,14 @@
 package com.hzgc.manage.service.impl;
 
 
-import com.hzgc.manage.dto.UserDto;
-import com.hzgc.manage.dto.UserPwdDto;
-import com.hzgc.manage.dto.UserUpdateDto;
+import cn.hutool.core.util.IdUtil;
+import com.hzgc.manage.dto.*;
 import com.hzgc.manage.entity.Log;
 import com.hzgc.manage.service.LogService;
 import org.apache.commons.lang.StringUtils;
 import com.hzgc.exception.HzgcException;
 import com.hzgc.manage.content.GlobalCont;
 import com.hzgc.manage.dao.UserRepository;
-import com.hzgc.manage.dto.UserLoginDto;
 import com.hzgc.manage.entity.User;
 import com.hzgc.manage.enums.ExceptionCodeEnums;
 import com.hzgc.manage.enums.UserStatusEnums;
@@ -42,29 +40,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void insert(UserUpdateDto userUpdateDto, Log log) {
-
-        String username = userUpdateDto.getUsername();
-        if (StringUtils.isBlank(username)) throw new HzgcException(ExceptionCodeEnums.USERNAME_ISNOT_BLANK);
+    public void insert(UserCreateDto userCreateDto, Log log) {
         User user = new User();
-        user.setId(UUID.randomUUID().toString());
-        user.setUsername(username);
-        user.setOriginpwd(GlobalCont.DEFALUT_USER_PASSWORD);
+        user.setUsername(userCreateDto.getUsername());
         user.setStatus(UserStatusEnums.ENABLE_USER_STATUS.getCode());
-        user.setCreatetime(new Date());
-        user.setPassword(MD5Utills.formPassToDBPass(GlobalCont.DEFALUT_USER_PASSWORD, GlobalCont.DEFALUT_USER_SALT));
-
-        userRepository.save(user);
+        this.save(user);
+        this.insertLog(log);
 
     }
 
     @Override
     public Page<User> findPageByUserName(String userName, Pageable pageable, Log log) {
-        logService.save(log);
+        //this.insertLog(log);
         if(StringUtils.isNotBlank(userName)){
         return userRepository.findByUsernameLike(userName, pageable);
         }
         return this.findPageAll(pageable);
+
     }
 
     @Override
@@ -75,7 +67,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findById(UserDto userDto, Log log) {
-        logService.save(log);
+        this.insertLog(log);
         return this.selectOneById(userDto.getId());
 
     }
@@ -83,9 +75,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteById(UserDto userDto, Log log) {
         String id = userDto.getId();
-        if (StringUtils.isNotBlank(id))  throw new HzgcException(ExceptionCodeEnums.USERID_ISNOT_BLANK);
+
+        if (StringUtils.isBlank(id))  throw new HzgcException(ExceptionCodeEnums.USERID_ISNOT_BLANK);
+
+        User user = this.selectOneById(id);
+        if(user.getUsername().equals(GlobalCont.DEFALUT_USER_ADMIIN))  throw new HzgcException(ExceptionCodeEnums.USER_ADMIN_ISNOT_OPERATRE);
+
         userRepository.deleteById(id);
-        logService.save(log);
+        this.insertLog(log);
     }
 
     @Override
@@ -93,36 +90,53 @@ public class UserServiceImpl implements UserService {
     public void resetpwd(UserDto userDto, Log log) {
         String id = userDto.getId();
         User user = this.selectOneById(id);
-            user.setPassword(MD5Utills.formPassToDBPass(GlobalCont.DEFALUT_USER_PASSWORD, GlobalCont.DEFALUT_USER_SALT));
-        this.save(user);
-        logService.save(log);
+        if(user.getUsername().equals(GlobalCont.DEFALUT_USER_ADMIIN))  throw new HzgcException(ExceptionCodeEnums.USER_ADMIN_ISNOT_OPERATRE);
+
+        user.setPassword(MD5Utills.formPassToDBPass(GlobalCont.DEFALUT_USER_PASSWORD, GlobalCont.DEFALUT_USER_SALT));
+        user.setOriginpwd(GlobalCont.DEFALUT_USER_PASSWORD);
+        userRepository.save(user);
+        this.insertLog(log);
     }
 
     @Override
     @Transactional
     public void changeStatus(UserDto userDto, Integer status, Log log) {
-            User user = this.selectOneById(userDto.getId());
-            user.setStatus(status);
-        this.save(user);
-        logService.save(log);
+        User user = this.selectOneById(userDto.getId());
+        if(user.getUsername().equals(GlobalCont.DEFALUT_USER_ADMIIN))  throw new HzgcException(ExceptionCodeEnums.USER_ADMIN_ISNOT_OPERATRE);
+        user.setStatus(status);
+        userRepository.save(user);
+        this.insertLog(log);
     }
 
     @Override
     @Transactional
     public void update(UserUpdateDto userDto, Log log) {
-        User user = this.selectOneById(userDto.getId());
+
+        String username = this.selectOneById(userDto.getId()).getUsername();
+
+        if(username.equals(GlobalCont.DEFALUT_USER_ADMIIN))  throw new HzgcException(ExceptionCodeEnums.USER_ADMIN_ISNOT_OPERATRE);
+
+        userRepository.deleteById(userDto.getId());
+
+        User user = new User();
         user.setUsername(userDto.getUsername());
         user.setStatus(userDto.getStatus());
         this.save(user);
-        logService.save(log);
+        this.insertLog(log);
     }
+
 
     @Override
     public void editorpwd(UserPwdDto userPwdDto, Log log) {
         User user = this.selectOneById(userPwdDto.getId());
-        user.setPassword(userPwdDto.getNewPassword());
-        this.save(user);
-        logService.save(log);
+        if(! user.getOriginpwd().equals(userPwdDto.getOriginpwd()))   throw new HzgcException(ExceptionCodeEnums.USERNAME_ISNOT_MATCH);
+
+        if(user.getUsername().equals(GlobalCont.DEFALUT_USER_ADMIIN))  throw new HzgcException(ExceptionCodeEnums.USER_ADMIN_ISNOT_OPERATRE);
+
+        user.setOriginpwd(userPwdDto.getNewPassword());
+        user.setPassword(MD5Utills.formPassToDBPass(userPwdDto.getNewPassword(), GlobalCont.DEFALUT_USER_SALT));
+        userRepository.save(user);
+        this.insertLog(log);
     }
 
     @Override
@@ -154,17 +168,17 @@ public class UserServiceImpl implements UserService {
             Iterable<User> userIterable = userRepository.findAll();
              List<User> list = new ArrayList<>();
             userIterable.forEach(single ->list.add(single));
-        insertLog(log);
+        //this.insertLog(log);
         return list;
     }
 
     private User selectOneById(String id){
-        if (StringUtils.isNotBlank(id))  throw new HzgcException(ExceptionCodeEnums.USERID_ISNOT_BLANK);
+        if (StringUtils.isBlank(id))  throw new HzgcException(ExceptionCodeEnums.USERID_ISNOT_BLANK);
         return userRepository.findById(id).get();
     }
 
     private void insertLog(Log log){
-        log.setId(UUID.randomUUID().toString());
+        log.setId(IdUtil.simpleUUID());
         User user = this.selectOneById(log.getUserid());
         log.setUsername(user.getUsername());
         log.setCreatetime(new Date());
@@ -173,6 +187,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void save(User user) {
+        String username = user.getUsername();
+        List<User> userList = userRepository.findByUsername(username);
+        if(userList != null && userList.size() > 0)  throw new HzgcException(ExceptionCodeEnums.USER_IS_EXIST);
+
+        if (StringUtils.isBlank(username)) throw new HzgcException(ExceptionCodeEnums.USERNAME_ISNOT_BLANK);
+        user.setId(IdUtil.simpleUUID());
+        user.setOriginpwd(GlobalCont.DEFALUT_USER_PASSWORD);
+        user.setCreatetime(new Date());
+        user.setPassword(MD5Utills.formPassToDBPass(GlobalCont.DEFALUT_USER_PASSWORD, GlobalCont.DEFALUT_USER_SALT));
+
         userRepository.save(user);
     }
 }
