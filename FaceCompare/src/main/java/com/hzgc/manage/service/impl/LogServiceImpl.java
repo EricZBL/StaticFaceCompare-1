@@ -27,8 +27,12 @@ import static org.springframework.data.elasticsearch.annotations.DateFormat.date
 @Service
 public class LogServiceImpl implements LogService {
 
+    private final LogRepository logRepository;
+
     @Autowired
-    private LogRepository logRepository;
+    public LogServiceImpl(LogRepository logRepository) {
+        this.logRepository = logRepository;
+    }
 
     @Override
     public Page<Log> findPageByXmSfz(PersonQueryDto personQueryDto, Pageable pageable) {

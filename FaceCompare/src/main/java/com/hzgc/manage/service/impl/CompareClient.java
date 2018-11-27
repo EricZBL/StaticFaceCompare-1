@@ -1,4 +1,4 @@
-package com.hzgc.client;
+package com.hzgc.manage.service.impl;
 
 import com.hzgc.common.CompareParam;
 import com.hzgc.common.SearchResult;
@@ -9,11 +9,11 @@ import com.hzgc.common.rpc.client.result.AllReturn;
 import com.hzgc.common.rpc.util.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Repository;
+//import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+@org.springframework.stereotype.Service
 @Slf4j
 public class CompareClient {
     private Service service;

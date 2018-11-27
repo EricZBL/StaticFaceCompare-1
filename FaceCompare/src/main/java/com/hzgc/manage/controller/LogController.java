@@ -28,8 +28,12 @@ import javax.validation.Valid;
 @RequestMapping("/log")
 public class LogController {
 
+    private final LogService logService;
+
     @Autowired
-    private LogService logService;
+    public LogController(LogService logService) {
+        this.logService = logService;
+    }
 
     @ApiOperation(value = "查询日志分页列表")
     @RequestMapping(value = "pageList", method = RequestMethod.POST)
