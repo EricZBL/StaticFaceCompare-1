@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
-
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class UserServiceImplTest {
@@ -29,7 +27,7 @@ public class UserServiceImplTest {
 
         List<Person> list = new ArrayList<>();
 
-        for(int i = 0; i < 50000; i ++){
+        for(int i = 0; i < 1; i ++){
 
         Person person = new Person();
 

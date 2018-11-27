@@ -1,6 +1,5 @@
 package com.hzgc.manage.service.impl;
 
-import cn.hutool.core.date.DateUtil;
 import com.hzgc.manage.dao.LogRepository;
 import com.hzgc.manage.entity.Log;
 import org.junit.Test;
@@ -11,10 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.Date;
-
-import static org.junit.Assert.*;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)

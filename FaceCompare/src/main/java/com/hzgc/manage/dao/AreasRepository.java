@@ -4,7 +4,6 @@ import com.hzgc.manage.entity.Areas;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * 县、区域Repository
@@ -12,8 +11,4 @@ import java.util.List;
  */
 public interface AreasRepository extends ElasticsearchRepository<Areas, String> {
 
-    /**
-     * 根据城市ID查询区域列表
-     */
-    List<Areas> findByCityid(String cityid);
 }

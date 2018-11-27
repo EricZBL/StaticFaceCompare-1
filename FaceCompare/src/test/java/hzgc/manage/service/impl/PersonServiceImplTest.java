@@ -1,9 +1,7 @@
 package com.hzgc.manage.service.impl;
 
-import com.hzgc.manage.dao.PersonRepository;
 import com.hzgc.manage.entity.Person;
 import com.hzgc.manage.service.PersonService;
-import javafx.scene.control.Pagination;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +22,6 @@ public class PersonServiceImplTest {
 
     @Autowired
     private PersonService personService;
-
-    @Autowired
-    private PersonRepository personRepository;
 
     @Test
     public void save() {
@@ -55,27 +50,12 @@ public class PersonServiceImplTest {
     @Test
     public void findAll() {
 
+        Pageable page = new PageRequest(0, 10);
+        Page<Person> all = personService.findAll(page);
+        System.err.println(all);
     }
 
     @Test
     public void findById() {
-        //40250008
-
-        long count = personRepository.count();
-        System.err.println(count);
-
-        return;
-    }
-
-    @Test
-    public void findPageByXmSfz() {
-
-        Pageable pageable = PageRequest.of(0, 10);
-
-        Page<Person> list = personRepository.findByXmLike("张三", pageable);
-
-        Page<Person> bySfzLike = personRepository.findBySfzLike("61042519920319093X", pageable);
-
-        System.err.println(bySfzLike);
     }
 }
