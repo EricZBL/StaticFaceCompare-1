@@ -43,6 +43,16 @@
             <artifactId>lombok</artifactId>
             <version>${projectlombok.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.hzgc.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hzgc</groupId>
+            <artifactId>Common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>

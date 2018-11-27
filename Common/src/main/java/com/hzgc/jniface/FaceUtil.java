@@ -7,10 +7,29 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Base64;
 
 public class FaceUtil {
     private static final String SPLIT = ":";
+
+    private static int HANMING_THRESHOLD = 200;
+    private static int SAVE_INDEX_MAX = 999;
+
+    public static void init(int hanming_Threshold, int saveIndexMax){
+        HANMING_THRESHOLD = hanming_Threshold;
+        SAVE_INDEX_MAX = saveIndexMax;
+    }
+
+    public static ArrayList<CompareResult> faceCompareBitOne(byte[][] featureList, byte[][] queryList, int topN){
+        ArrayList<CompareResult> res = new ArrayList<>();
+        for(int i = 0; i < queryList.length ; i ++){
+            FaceCompareUtil faceCompareUtil = new FaceCompareUtil(HANMING_THRESHOLD, SAVE_INDEX_MAX);
+            CompareResult compareResult = faceCompareUtil.faceCompareBitOne(i + "", featureList, queryList[i], topN);
+            res.add(compareResult);
+        }
+        return res;
+    }
 
     /**
      * 特征提取方法 （内）（赵喆）
