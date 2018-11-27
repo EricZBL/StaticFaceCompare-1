@@ -21,7 +21,7 @@ public class FeatureCache {
     }
 
     private FeatureCache(){
-
+        init();
     }
 
     public static FeatureCache getInstance(){
