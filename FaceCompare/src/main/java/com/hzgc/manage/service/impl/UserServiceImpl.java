@@ -140,7 +140,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void login(UserLoginDto userLoginDto,  String logname) {
+    public User login(UserLoginDto userLoginDto, String logname) {
 
         User user = userRepository.findByUsernameAndPassword(userLoginDto.getUsername(), MD5Utills.formPassToDBPass(userLoginDto.getPassword(), GlobalCont.DEFALUT_USER_SALT));
 
@@ -157,6 +157,7 @@ public class UserServiceImpl implements UserService {
             log.setCreatetime(new Date());
             logService.save(log);
         }
+        return user;
     }
 
     @Override

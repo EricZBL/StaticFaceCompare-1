@@ -22,7 +22,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户web层
@@ -41,8 +44,13 @@ public class UserController {
     @ApiOperation(value = "账号登录")
     @RequestMapping(value = "login", method = RequestMethod.POST)
     public ResultVO<String> login(@RequestBody @Valid UserLoginDto userLoginDto) {
-        userService.login(userLoginDto, AnnUtils.getApiValue(USER_CONTROLLER_CLASS_NAME, "login"));
-        return ResultUtils.success();
+        User user = userService.login(userLoginDto, AnnUtils.getApiValue(USER_CONTROLLER_CLASS_NAME, "login"));
+        HashMap<String, String> map = new HashMap<>();
+        map.put("userId", user.getId());
+        map.put("username", user.getUsername());
+        List<Map<String, String>> list = new ArrayList<>();
+        list.add(map);
+        return ResultUtils.success(list);
     }
 
     @ApiOperation(value = "查询账号列表")

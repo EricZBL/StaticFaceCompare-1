@@ -16,7 +16,17 @@ public class  RandomValue {
     private static final String[] email_suffix="@gmail.com,@yahoo.com,@msn.com,@hotmail.com,@aol.com,@ask.com,@live.com,@qq.com,@0355.net,@163.com,@163.net,@263.net,@3721.net,@yeah.net,@googlemail.com,@126.com,@sina.com,@sohu.com,@yahoo.com.cn".split(",");
     private static String[] province = "浙江省,江西省,湖南省,江苏省,广东省,河南省,陕西省,山西省,山东省,黑龙江省,吉林省,安徽省".split(",");
     private static String[] city = "宁波市,株洲市,合肥市,日照市,杭州市,商丘市,洛阳市,齐齐哈尔,安庆市,西安市,广州市,长沙市".split(",");
-       
+    private static String provinces[] = { "11", "12", "13", "14", "15", "21", "22", "23",
+            "31", "32", "33", "34", "35", "36", "37", "41", "42", "43",
+            "44", "45", "46", "50", "51", "52", "53", "54", "61", "62",
+            "63", "64", "65", "71", "81", "82" };
+    private static String citys[] = { "01", "02", "03", "04", "05", "06", "07", "08",
+            "09", "10", "21", "22", "23", "24", "25", "26", "27", "28" };
+    private static String countys[] = { "01", "02", "03", "04", "05", "06", "07", "08",
+            "09", "10", "21", "22", "23", "24", "25", "26", "27", "28",
+            "29", "30", "31", "32", "33", "34", "35", "36", "37", "38" };
+
+
     public static int getNum(int start,int end) {  
         return (int)(Math.random()*(end-start+1)+start);  
     }  
@@ -99,11 +109,27 @@ public class  RandomValue {
         return first+second;
     }
     public static final String getSfz(){
-        String bir = new Random().nextInt(14)+"";
-        String checks[] = { "0", "1", "2", "3", "4", "5", "6", "7", "8",
-                "9", "X" };
+        String id = "";
+
+        String province = provinces[new Random().nextInt(provinces.length - 1)];
+
+        String city = citys[new Random().nextInt(citys.length - 1)];
+
+        String county = countys[new Random().nextInt(countys.length - 1)];
+        SimpleDateFormat dft = new SimpleDateFormat("yyyyMMdd");
+        Date beginDate = new Date();
+        Calendar date = Calendar.getInstance();
+        date.setTime(beginDate);
+        date.set(Calendar.DATE,
+                date.get(Calendar.DATE) - new Random().nextInt(365 * 100));
+        String birth = dft.format(date.getTime());
+        String no = new Random().nextInt(999) + "";
+        String checks[] = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+                "X" };
         String check = checks[new Random().nextInt(checks.length - 1)];
-        return bir+check;
+        id = province + city + county + birth + no + check;
+
+        return id;
     }
 
     public static final String getSr(){

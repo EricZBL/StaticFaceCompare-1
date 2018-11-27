@@ -106,6 +106,15 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <targetPath>${project.build.directory}</targetPath>
+                <directory>docker</directory>
+                <includes>
+                    <include>**</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 
 

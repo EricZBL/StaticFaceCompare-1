@@ -6,6 +6,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
@@ -27,7 +30,7 @@ public class UserServiceImplTest {
 
         List<Person> list = new ArrayList<>();
 
-        for(int i = 0; i < 1; i ++){
+        for(int i = 0; i < 1000; i ++){
 
         Person person = new Person();
 
@@ -77,6 +80,12 @@ public class UserServiceImplTest {
     @Test
     public void save() {
 //        userRepository.deleteById("6cad4c8f-ea58-4848-b5d1-4165c3b2c39b");
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<Person> list = personRepository.findByXmLike("*红*", pageable);
+
+        Page<Person> bySfzLike = personRepository.findBySfzLike("*194112*", pageable);
+        System.out.println(list);
 
     }
 
