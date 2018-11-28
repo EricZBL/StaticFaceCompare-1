@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
     public Page<User> findPageByUserName(String userName, Pageable pageable, Log log) {
         //this.insertLog(log);
         if(StringUtils.isNotBlank(userName)){
-        return userRepository.findByUsernameLike(userName, pageable);
+        return userRepository.findByUsernameLike("*" + userName + "*", pageable);
         }
         return this.findPageAll(pageable);
 

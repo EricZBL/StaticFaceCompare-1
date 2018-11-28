@@ -1,5 +1,6 @@
 package com.hzgc.manage.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.hzgc.manage.dto.LogQueryDto;
 import com.hzgc.manage.entity.Log;
 import com.hzgc.manage.service.LogService;
@@ -37,12 +38,18 @@ public class LogController {
 
     @ApiOperation(value = "查询日志分页列表")
     @RequestMapping(value = "pageList", method = RequestMethod.POST)
-    public ResultVO<Page> pageList(@RequestBody @Valid LogQueryDto logQueryDto){
+    public ResultVO<com.hzgc.utils.Page> pageList(@RequestBody @Valid LogQueryDto logQueryDto){
 
-            Pageable pageable = PageRequest.of(logQueryDto.getPage(), logQueryDto.getSize());
+            Pageable pageable = PageRequest.of(logQueryDto.getPage() - 1, logQueryDto.getSize());
             Page<Log> page = logService.findPage(logQueryDto, pageable);
 
-        return ResultUtils.success(page);
+            com.hzgc.utils.Page<Log> logPage = new com.hzgc.utils.Page<>();
+            BeanUtil.copyProperties(page, logPage);
+            logPage.setNumber(page.getNumber() + 1);
+            logPage.setTotalElements(page.getTotalElements());
+            logPage.setSize(page.getSize());
+
+        return ResultUtils.success(logPage);
     }
 
 }
