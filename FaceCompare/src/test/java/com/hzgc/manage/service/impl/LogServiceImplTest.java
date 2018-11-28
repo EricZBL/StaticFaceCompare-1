@@ -33,7 +33,7 @@ public class LogServiceImplTest {
 
         Pageable pageable = PageRequest.of(0, 10);
 
-        Page<Log> admin = logRepository.findByUsernameOrCreatetimeBetween("admin", "2018-11-26 00:00:00", "2018-11-26 22:00:59", pageable);
+        Page<Log> admin = logRepository.findByUsernameLikeOrCreatetimeBetween("admin", "2018-11-26 00:00:00", "2018-11-26 22:00:59", pageable);
 
         System.err.println(admin);
     }
