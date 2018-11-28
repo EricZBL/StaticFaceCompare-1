@@ -23,20 +23,11 @@ public interface LogRepository extends ElasticsearchRepository<Log, String> {
     /**
      * 按照姓名、时间匹配
      */
-    Page<Log> findByUsernameOrCreatetimeBetween(String username,  String starttime, String endtime, Pageable pageable);
+    Page<Log> findByUsernameLikeOrCreatetimeBetween(String username,  String starttime, String endtime, Pageable pageable);
 
     /**
      * 按照姓名、时间匹配
      */
-    Page<Log> findByUsername(String username, Date password, Pageable pageable);
+    Page<Log> findByUsernameLikeAndCreatetimeBetween(String username,  String starttime, String endtime, Pageable pageable);
 
-    /**
-     * 按照姓名、时间匹配
-     */
-    Page<Log> findByCreatetimeBetween(String username, Date starttime, Date endtime, Pageable pageable);
-
-    /**
-     * 按照姓名、时间匹配
-     */
-    Page<Log> findByUsernameAndCreatetimeBetween(String username, String starttime, String endtime, Pageable pageable);
 }
