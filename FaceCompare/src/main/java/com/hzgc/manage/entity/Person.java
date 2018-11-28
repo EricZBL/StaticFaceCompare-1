@@ -84,9 +84,14 @@ public class Person implements Serializable {
     private String jg;
 
     /**
-     * base64图片（tp）
+     * 图片路径（tp）
      */
     private String tp;
+
+    /**
+     * base64图片（tpbase）
+     */
+    private String tpbase;
 
     /**
      * 特征值（tzz）
@@ -220,6 +225,14 @@ public class Person implements Serializable {
 
     public String getBittzz() {
         return bittzz;
+    }
+
+    public String getTpbase() {
+        return tpbase;
+    }
+
+    public void setTpbase(String tpbase) {
+        this.tpbase = tpbase;
     }
 
     public void setBittzz(String bittzz) {

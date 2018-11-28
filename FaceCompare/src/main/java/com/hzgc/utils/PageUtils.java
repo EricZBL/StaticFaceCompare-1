@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class Page<T> {
+public class PageUtils<T> {
 
     private int number;
 

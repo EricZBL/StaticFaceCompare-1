@@ -11,13 +11,15 @@ import com.hzgc.manage.entity.Person;
 import com.hzgc.manage.enums.ExceptionCodeEnums;
 import com.hzgc.manage.service.LogService;
 import com.hzgc.manage.service.PersonService;
+import com.hzgc.utils.Base64Utils;
+import com.hzgc.utils.PageUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
+import java.util.List;
 
 /**
  * created by liang on 18-11-16
@@ -33,17 +35,27 @@ public class PersonServiceImpl implements PersonService {
 
 
     @Override
-    public Page<Person> findPageByXmSfz(PersonQueryDto personQueryDto, Pageable pageable, Log log) {
-        logService.save(log);
-        String name = personQueryDto.getXm();
-        String idCard =personQueryDto.getSfz();
-        if (StringUtils.isNotBlank(name)){
-            return personRepository.findByXmLike(name,pageable);
-        }
-        if (StringUtils.isNotBlank(idCard)){
-            return personRepository.findBySfzLike(idCard,pageable);
-        }
-        return personRepository.findAll(pageable);
+    public PageUtils<Person> findPageByXmSfz(PersonQueryDto personQueryDto, Pageable pageable, Log log) {
+
+            Page<Person> personPage = this.findPersonPage(personQueryDto, pageable);
+
+            PageUtils<Person> page = new PageUtils<>();
+            page.setNumber(personPage.getNumber()+1);
+            page.setSize(personPage.getSize());
+            page.setTotalElements(personPage.getTotalElements());
+
+            List<Person> content = personPage.getContent();
+
+    //        content.stream().forEach(e -> {
+    //            e.setTpbase(Base64Utils.getImageStr(e.getTp()));
+    //        });
+            for (Person  person : content) {
+                String tp = person.getTp();
+                person.setTpbase(Base64Utils.getImageStr(tp));
+            }
+            page.setContent(content);
+        return page;
+
     }
 
     @Override
@@ -116,21 +128,48 @@ public class PersonServiceImpl implements PersonService {
     }
 
 //    @Override
-//    public Page<Person> searchByXm(String xm, Pageable pageable) {
+//    public PageUtils<Person> searchByXm(String xm, Pageable pageable) {
 //        if (xm == null) return  null;
 //        return personRepository.findByXmLike(xm, pageable);
 //    }
 //
 //    @Override
-//    public Page<Person> searchBySfz(String sfz, Pageable pageable) {
+//    public PageUtils<Person> searchBySfz(String sfz, Pageable pageable) {
 //        if (sfz == null) return  null;
 //        return personRepository.findBySfzLike(sfz, pageable);
 //    }
 //
 //    @Override
-//    public Page<Person> search(String sfz, String xm, Pageable pageable) {
+//    public PageUtils<Person> search(String sfz, String xm, Pageable pageable) {
 //        return personRepository.findBySfzLikeOrXmLike(sfz, xm, pageable);
 //    }
 
+
+    @Override
+    public byte[] getImage(String personid) {
+
+        Person person = personRepository.findById(personid).get();
+        String tp = person.getTp();
+
+        byte[] image;
+        if (StringUtils.isNotBlank(tp)) {
+            return Base64Utils.base64Str2BinArry(Base64Utils.getImageStr(tp));
+        } else {
+            return image = new byte[0];
+        }
+    }
+
+    private Page<Person> findPersonPage(PersonQueryDto personQueryDto, Pageable pageable){
+
+        String name = personQueryDto.getXm();
+        String idCard =personQueryDto.getSfz();
+        if (StringUtils.isNotBlank(name)){
+            return personRepository.findByXmLike("*"+name+"*",pageable);
+        }
+        if (StringUtils.isNotBlank(idCard)){
+            return personRepository.findBySfzLike("*"+idCard+"*",pageable);
+        }
+        return personRepository.findAll(pageable);
+    }
 
 }

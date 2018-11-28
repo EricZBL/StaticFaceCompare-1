@@ -26,7 +26,7 @@ public interface PersonRepository extends ElasticsearchRepository<Person, String
     Page<Person> findByXmLike(String xm, Pageable pageable);
 
 
-    //Page<Poem> findByContentLike(@Param("content") String content, Pageable pageable);
+    //PageUtils<Poem> findByContentLike(@Param("content") String content, Pageable pageable);
 
 
 

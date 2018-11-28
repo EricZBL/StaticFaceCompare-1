@@ -5,9 +5,9 @@ import com.hzgc.manage.dto.LogQueryDto;
 import com.hzgc.manage.entity.Log;
 import com.hzgc.manage.service.LogService;
 import com.hzgc.manage.vo.ResultVO;
+import com.hzgc.utils.PageUtils;
 import com.hzgc.utils.ResultUtils;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,12 +34,12 @@ public class LogController {
 
     @ApiOperation(value = "查询日志分页列表")
     @RequestMapping(value = "pageList", method = RequestMethod.POST)
-    public ResultVO<com.hzgc.utils.Page> pageList(@RequestBody @Valid LogQueryDto logQueryDto){
+    public ResultVO<PageUtils> pageList(@RequestBody @Valid LogQueryDto logQueryDto){
 
             Pageable pageable = PageRequest.of(logQueryDto.getPage() - 1, logQueryDto.getSize());
             Page<Log> page = logService.findPage(logQueryDto, pageable);
 
-            com.hzgc.utils.Page<Log> logPage = new com.hzgc.utils.Page<>();
+            PageUtils<Log> logPage = new PageUtils<>();
             BeanUtil.copyProperties(page, logPage);
             logPage.setNumber(page.getNumber() + 1);
             logPage.setTotalElements(page.getTotalElements());

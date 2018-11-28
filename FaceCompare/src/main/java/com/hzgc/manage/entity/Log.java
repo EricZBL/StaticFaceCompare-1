@@ -40,14 +40,19 @@ public class Log implements Serializable {
     private String userid;
 
     /**
-     * 性别（xb）
+     * （xb）
      */
     private String personname;
 
     /**
-     * 民族（mz）
+     * 图片（mz）
      */
     private String personpic;
+
+    /**
+     * 被操作人口id（mz）
+     */
+    private String personid;
 
     /**
      * 用户创建时间

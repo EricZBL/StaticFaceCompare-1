@@ -8,6 +8,7 @@ import com.hzgc.manage.enums.UserStatusEnums;
 import com.hzgc.manage.service.UserService;
 import com.hzgc.manage.vo.ResultVO;
 import com.hzgc.utils.AnnUtils;
+import com.hzgc.utils.PageUtils;
 import com.hzgc.utils.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -66,13 +67,13 @@ public class UserController {
 
             @ApiOperation(value = "查询账号分页列表")
             @RequestMapping(value = "pageList", method = RequestMethod.POST)
-    public ResultVO<com.hzgc.utils.Page> pageList(@RequestBody UserQueryDto userQueryDto){
+    public ResultVO<PageUtils> pageList(@RequestBody UserQueryDto userQueryDto){
 
         Log log = new Log(userQueryDto.getUserId(), AnnUtils.getApiValue(USER_CONTROLLER_CLASS_NAME, "pageList"));
             Pageable pageable =  PageRequest.of(userQueryDto.getPage() - 1, userQueryDto.getSize());
             Page<User> page = userService.findPageByUserName(userQueryDto.getUsername(), pageable, log);
 
-        com.hzgc.utils.Page<User> userPage = new com.hzgc.utils.Page<>();
+        PageUtils<User> userPage = new PageUtils<>();
                 BeanUtil.copyProperties(page, userPage);
                 userPage.setNumber(page.getNumber() + 1);
                 userPage.setTotalElements(page.getTotalElements());

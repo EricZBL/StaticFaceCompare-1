@@ -10,14 +10,16 @@ import com.hzgc.manage.entity.Person;
 import com.hzgc.manage.service.PersonService;
 import com.hzgc.manage.vo.ResultVO;
 import com.hzgc.utils.AnnUtils;
+import com.hzgc.utils.PageUtils;
 import com.hzgc.utils.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -45,12 +47,12 @@ public class PersonController {
 
     @ApiOperation(value = "人口分页列表")
     @RequestMapping(value = "pageList", method = RequestMethod.POST)
-    public ResultVO<Page> pageList(@RequestBody PersonQueryDto personQueryDto){
+    public ResultVO<PageUtils> pageList(@RequestBody PersonQueryDto personQueryDto){
 
         Log log = new Log(personQueryDto.getUserId(), AnnUtils.getApiValue(PERSON_CONTROLLER_CLASS_NAME, "pageList"));
-        Pageable pageable = PageRequest.of(personQueryDto.getPage(), personQueryDto.getSize());
+        Pageable pageable = PageRequest.of(personQueryDto.getPage()-1, personQueryDto.getSize());
         long l = System.currentTimeMillis();
-        Page<Person> page = personService.findPageByXmSfz(personQueryDto, pageable, log);
+        PageUtils<Person> page = personService.findPageByXmSfz(personQueryDto, pageable, log);
         long ll = System.currentTimeMillis();
         System.out.println("pagelist cost:"+(ll-l));
         return ResultUtils.success(page);
@@ -186,5 +188,15 @@ public class PersonController {
             return bigPictureData;
         }
         return null;
+    }
+
+    @ApiOperation(value = "获取原图片")
+    @RequestMapping(value = "/image", method = RequestMethod.GET)
+    public ResponseEntity<byte[]> getImage(@RequestParam("personid") @ApiParam(name="personid",value="personid",required=true) String personid) {
+        byte[] image = personService.getImage(personid);
+        if (image == null || image.length == 0) {
+            return ResponseEntity.badRequest().contentType(MediaType.IMAGE_JPEG).body(null);
+        }
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
     }
 }
