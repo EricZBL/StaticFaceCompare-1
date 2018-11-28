@@ -9,6 +9,7 @@ import java.util.Properties;
 
 public class Config {
     public static final String SERVICE_PATH = "/static_compare_service";
+    public static final String EADIT_LOG = "eadit_log"; //操作日志
     public static String ES_CLUSTER_NAME;
     public static String ES_HOST;
     public static int ES_CLUSTER_PORT;
@@ -18,6 +19,7 @@ public class Config {
     public static String FILE_PATH;
     public static String ZK_ADDRESS;
     public static String WORKER_ADDRESS;
+    public static int DEAL_WITH_DELETE; //处理删除操作， 0 处理 1 不处理
 
     static {
         Properties prop = PropertiesUtil.getProperties();
@@ -37,6 +39,7 @@ public class Config {
             ZK_ADDRESS = sysVar;
         }
         WORKER_ADDRESS = getLocalIpAddress();
+        DEAL_WITH_DELETE = Integer.parseInt(prop.getProperty("deal.with.delete"));
     }
 
     private static String getLocalIpAddress(){
