@@ -22,6 +22,10 @@ public class PersonDto implements Serializable {
     @ApiModelProperty(value="登录账号userId",name="userId",example="")
     private String userId;
 
+    @NotEmpty(message = "人口Id不能为空")
+    @ApiModelProperty(value="人口Id",name="peopleId",example="")
+    private String peopleId;
+
     /**
      * 身份证（sfz）
      */

@@ -1,6 +1,7 @@
 package com.hzgc.manage.controller;
 
-import com.hzgc.jniface.BigPictureData;
+import cn.hutool.core.util.IdUtil;
+import com.hzgc.jniface.*;
 import com.hzgc.bean.SearchOption;
 import com.hzgc.manage.dto.PersonDto;
 import com.hzgc.manage.dto.PersonQueryDto;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.naming.directory.SearchResult;
+import java.util.ArrayList;
 
 /**
  * 人口库服务web层
@@ -66,9 +68,9 @@ public class PersonController {
     }
 
     @ApiOperation(value = "查询人口详情")
-    @RequestMapping(value = "info", method = RequestMethod.POST)
-    public ResultVO<Person> info(@ApiParam(name="userid",value="登录账号id",required=true) String userid,
-                                 @ApiParam(name="id",value="人口id",required=true) String id) {
+    @RequestMapping(value = "info", method = RequestMethod.GET)
+    public ResultVO<Person> info(@RequestParam("userid") @ApiParam(name="userid",value="登录账号id",required=true) String userid,
+                                 @RequestParam("id") @ApiParam(name="id",value="人口id",required=true) String id) {
         Log log = new Log(userid, AnnUtils.getApiValue(PERSON_CONTROLLER_CLASS_NAME, "info"));
         long l = System.currentTimeMillis();
         Person person = personService.findById(id, log);
@@ -106,22 +108,17 @@ public class PersonController {
         Log log = new Log(userid, AnnUtils.getApiValue(PERSON_CONTROLLER_CLASS_NAME, "delete"));
 
         byte[] imageBin = null;
-        if (image == null) {
-//            log.error("Start extract feature by binary, image is null");
-//            return ResponseResult.error(RestErrorCode.ILLEGAL_ARGUMENT);
+        try {
+            imageBin = image.getBytes();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-//        try {
-//            imageBin = image.getBytes();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-        //邏輯
-//       // BigPictureData bigPictureData = faceExtractService.featureExtractByImage(imageBin);
-//        if (null == bigPictureData) {
-//            return ResponseResult.error(RestErrorCode.ILLEGAL_ARGUMENT, "提取不到特征值");
-//        }
-        BigPictureData bigPictureData = new BigPictureData();
+        BigPictureData bigPictureData = this.featureExtractByImage(imageBin);
+        if (null == bigPictureData) {
+            return null;
+        }
+//        FaceAttribute faceAttribute = FaceFunction.faceFeatureExtract(Base64Utils.base64Str2BinArry(StrJson), PictureFormat.JPG);
+//        StrJson = Base64Utils.getImageStr(strFileName);
         return ResultUtils.success(bigPictureData);
     }
 
@@ -164,5 +161,30 @@ public class PersonController {
 
 
         return  new ResultVO<SearchResult>();
+    }
+
+    private BigPictureData featureExtractByImage(byte[] imageBytes) {
+        String imageType = null;
+        BigPictureData bigPictureData = new BigPictureData();
+        ArrayList<PictureData> smallPictures = new ArrayList<>();
+        ArrayList<SmallImage> smallImages = FaceFunction.faceCheck(imageBytes, PictureFormat.JPG, PictureFormat.LEVEL_WIDTH_3);
+        if (null != smallImages && smallImages.size() > 0) {
+            for (SmallImage smallImage : smallImages) {
+                PictureData pictureData = new PictureData();
+                pictureData.setImageData(smallImage.getPictureStream());
+                pictureData.setImageID(IdUtil.simpleUUID());
+                pictureData.setFeature(smallImage.getFaceAttribute());
+                pictureData.setImage_coordinate(smallImage.getFaceAttribute().getImage_coordinate());
+                imageType = smallImage.getImageType();
+                smallPictures.add(pictureData);
+            }
+            bigPictureData.setImageType(imageType);
+            bigPictureData.setSmallImages(smallPictures);
+            bigPictureData.setTotal(smallPictures.size());
+            bigPictureData.setImageID(IdUtil.simpleUUID());
+            bigPictureData.setImageData(imageBytes);
+            return bigPictureData;
+        }
+        return null;
     }
 }
