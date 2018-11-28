@@ -51,13 +51,13 @@ public class LogServiceImpl implements LogService {
                 Date createtime = logQueryDto.getCreatetime();
                 String starttime = DateUtil.format(DateUtil.beginOfDay(createtime), "yyyy-MM-dd HH:mm:ss");
                 String endtime = DateUtil.format(DateUtil.endOfDay(createtime), "yyyy-MM-dd HH:mm:ss");
-                return logRepository.findByUsernameAndCreatetimeBetween(logQueryDto.getUsername(), starttime, endtime, pageable);
+                return logRepository.findByUsernameLikeAndCreatetimeBetween(logQueryDto.getUsername(), starttime, endtime, pageable);
 
                 }else {
                 Date createtime = logQueryDto.getCreatetime();
                 String starttime = DateUtil.format(DateUtil.beginOfDay(createtime), "yyyy-MM-dd HH:mm:ss");
                 String endtime = DateUtil.format(DateUtil.endOfDay(createtime), "yyyy-MM-dd HH:mm:ss");
-                return logRepository.findByUsernameOrCreatetimeBetween(logQueryDto.getUsername(), starttime, endtime, pageable);
+                return logRepository.findByUsernameLikeOrCreatetimeBetween(logQueryDto.getUsername(), starttime, endtime, pageable);
             }
         }
         return  logRepository.findAll(pageable);
