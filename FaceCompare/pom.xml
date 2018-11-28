@@ -115,6 +115,7 @@
                 </includes>
             </resource>
         </resources>
+        <finalName>face-compare</finalName>
     </build>
 
 

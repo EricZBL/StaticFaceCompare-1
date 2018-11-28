@@ -6,7 +6,7 @@ ENV PATH /usr/local/bin:$PATH
 
 #操作文件
 COPY docker-entrypoint.sh /
-COPY dispatch.jar /app.jar
+COPY face-compare.jar /app.jar
 
 #执行命令
 RUN chmod +x /docker-entrypoint.sh && /bin/cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' >/etc/timezone

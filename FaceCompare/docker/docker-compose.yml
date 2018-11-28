@@ -1,0 +1,55 @@
+version: '2.3'
+
+services:
+
+  esearch:
+    image: ${DOCKER_REPOSITOR}/hzgc/elasticsearch-ik:5.5.0
+    container_name: esearch
+    restart: always
+    environment:
+    - discovery.type=single-node
+    - node.name=${DOCKER_HOST_NAME}
+    - network.host=${DOCKER_HOST_IP}
+    - cluster.name=docker-cluster
+    - bootstrap.memory_lock=true
+    hostname: esearch
+    privileged: true
+    network_mode: "host"
+    ports:
+    - "9200:9200"
+    - "9300:9300"
+    volumes:
+    - ${DOCKER_HOME}/es/data:/usr/share/elasticsearch/data
+
+  zookeeper:
+    image: ${DOCKER_REPOSITOR}/hzgc/zookeeper:3.4.10
+    container_name: zookeeper
+    restart: always
+    hostname: zookeeper
+    ports:
+    - "2181:2181"
+    - "2888:2888"
+    - "3888:3888"
+    volumes:
+    - ${DOCKER_HOME}/zookeeper/data:/data
+    - ${DOCKER_HOME}/zookeeper/datalog:/datalog
+
+  facecompare:
+    image: ${DOCKER_REPOSITOR}/hzgc/facecompare:${VERSION}
+    depends_on:
+    - zookeeper
+    - esearch
+    container_name: facecompare
+    restart: always
+    environment:
+    - ZOOKEEPER_HOST=${ZK_HOST}:${ZK_PORT}
+    - ES_HOST=${ES_HOST}
+    - TZ=Asia/Shanghai
+    network_mode: "host"
+    extra_hosts:
+    - platform:${PLATFORM_HOST}
+    volumes:
+    - ${DOCKER_HOME}/facecompare/log:/log
+    - /usr/lib64/ld-linux-x86-64.so.2:/lib/ld-linux-x86-64.so.2
+    - /etc/localtime:/etc/localtime:ro
+
