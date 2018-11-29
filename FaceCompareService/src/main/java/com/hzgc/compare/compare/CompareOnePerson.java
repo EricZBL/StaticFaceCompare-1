@@ -27,7 +27,8 @@ public class CompareOnePerson {
         byte[][] query = new byte[1][32];
         query[0] = bitFeature;
         byte[][] diku = featureCache.getFeatureArr();
-        ArrayList<CompareResult> compareResults = FaceUtil.faceCompareBitOne(diku, query, RES_FIRST_COMPARE);
+        int dukuNum = featureCache.getFeatureSize();
+        ArrayList<CompareResult> compareResults = FaceUtil.faceCompareBitOne(diku, dukuNum, query, RES_FIRST_COMPARE);
         if(compareResults == null || compareResults.size() == 0){
             log.error("First compare faild. No result return.");
             return new SearchResult();
@@ -35,6 +36,9 @@ public class CompareOnePerson {
         long firstCompared = System.currentTimeMillis();
         log.info("The time firt compare used is " + (firstCompared - start));
 
+        if(compareResults.get(0).getPictureInfoArrayList() == null || compareResults.get(0).getPictureInfoArrayList().size() == 0){
+            return new SearchResult();
+        }
         ArrayList<FaceFeatureInfo> faceFeatureInfos = compareResults.get(0).getPictureInfoArrayList();
         List<String> ids = new ArrayList<>();
         for(FaceFeatureInfo faceFeatureInfo : faceFeatureInfos){

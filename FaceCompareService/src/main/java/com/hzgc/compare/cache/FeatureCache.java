@@ -1,10 +1,12 @@
 package com.hzgc.compare.cache;
 
 import com.hzgc.compare.common.Pair;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Slf4j
 public class FeatureCache {
     private static FeatureCache featureCache;
     private ReentrantLock writeLock = new ReentrantLock();
@@ -35,7 +37,7 @@ public class FeatureCache {
      * 扩展缓存数组
      */
     private void expand(){
-        featureSizeMax += 5000000;
+        featureSizeMax += 1000000;
         byte[][] newFeatureArr = new byte[featureSizeMax][32];
         System.arraycopy(featureArr, 0, newFeatureArr, 0, newFeatureArr.length);
         String[] newEsIdArr = new String[featureSizeMax];
@@ -75,11 +77,35 @@ public class FeatureCache {
         }
     }
 
+    public int getFeatureSize(){
+        return featureSize;
+    }
+
     public byte[][] getFeatureArr() {
         return featureArr;
     }
 
+    public int getFeatureSizeMax(){
+        return featureSizeMax;
+    }
+
     public String getId(int index){
         return esIdArr[index];
+    }
+
+    public void reLoadFeatures(byte[][] featureArr, String[] esIdArr){
+        writeLock.lock();
+        if(featureArr.length != esIdArr.length){
+            log.error("The datas reload is irregular");
+            return;
+        }
+
+        try {
+            this.featureArr = featureArr;
+            this.esIdArr = esIdArr;
+            this.featureSize = featureArr.length;
+        }finally {
+            writeLock.unlock();
+        }
     }
 }

@@ -30,10 +30,10 @@ public class FaceCompareUtil {
         indexes = new int[257 - HANMING_THRESHOLD];
     }
 
-    public long[][] faceCompareBitOne(String index, byte[][] featureList, byte[] queryList, int topN, long[][] resBuffer){
+    public long[][] faceCompareBitOne(String index, byte[][] featureList, int featureNum, byte[] queryList, int topN, long[][] resBuffer){
         if(resBuffer.length == HANMING_THRESHOLD){
             arr = resBuffer;
-            for(long j = 0; j < featureList.length; j++){
+            for(long j = 0; j < featureNum; j++){
                 int dist = 0;
                 for(int i = 0; i < 32 ; i ++){
                     dist += hamming[~ (queryList[i] ^ featureList[(int) j][i]) & 0xFF];
@@ -51,8 +51,8 @@ public class FaceCompareUtil {
         return arr;
     }
 
-    public CompareResult faceCompareBitOne(String index, byte[][] featureList, byte[] queryList, int topN){
-        for(long j = 0; j < featureList.length; j++){
+    public CompareResult faceCompareBitOne(String index, byte[][] featureList, int featureNum, byte[] queryList, int topN){
+        for(long j = 0; j < featureNum; j++){
             int dist = 0;
             for(int i = 0; i < 32 ; i ++){
                 dist += hamming[~ (queryList[i] ^ featureList[(int) j][i]) & 0xFF];
@@ -70,6 +70,7 @@ public class FaceCompareUtil {
         ArrayList<FaceFeatureInfo> faceFeatureInfos = new ArrayList<>();
         int resSize = 0;
         int arrIndex = arr.length -1;
+        topN = Integer.min(topN, featureNum);
         while(resSize < topN){
             long[] ress = arr[arrIndex];
             int resIndexMax = indexes[arrIndex] - 1;
