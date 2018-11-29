@@ -66,6 +66,7 @@ public class FileStreamManager {
                 if(!file.isFile()){
                     continue;
                 }
+                log.info("Create Stream for file " + fileName);
                 try {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
                     Readers.add(reader);
@@ -134,6 +135,16 @@ public class FileStreamManager {
 
     public List<String> getFilePathes() {
         return filePaths;
+    }
+
+    public void closeWriters(){
+        for(Map.Entry<String, BufferedWriter> writerEntry : cityToWriter.entrySet()){
+            try {
+                writerEntry.getValue().close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void reLoadStreamWrite(){

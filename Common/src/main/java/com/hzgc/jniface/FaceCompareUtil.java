@@ -70,6 +70,7 @@ public class FaceCompareUtil {
         ArrayList<FaceFeatureInfo> faceFeatureInfos = new ArrayList<>();
         int resSize = 0;
         int arrIndex = arr.length -1;
+        topN = Integer.min(topN, featureNum);
         while(resSize < topN){
             long[] ress = arr[arrIndex];
             int resIndexMax = indexes[arrIndex] - 1;

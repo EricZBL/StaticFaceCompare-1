@@ -36,6 +36,9 @@ public class CompareOnePerson {
         long firstCompared = System.currentTimeMillis();
         log.info("The time firt compare used is " + (firstCompared - start));
 
+        if(compareResults.get(0).getPictureInfoArrayList() == null || compareResults.get(0).getPictureInfoArrayList().size() == 0){
+            return new SearchResult();
+        }
         ArrayList<FaceFeatureInfo> faceFeatureInfos = compareResults.get(0).getPictureInfoArrayList();
         List<String> ids = new ArrayList<>();
         for(FaceFeatureInfo faceFeatureInfo : faceFeatureInfos){

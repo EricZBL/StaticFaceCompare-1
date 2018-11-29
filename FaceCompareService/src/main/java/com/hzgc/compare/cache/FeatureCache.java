@@ -37,7 +37,7 @@ public class FeatureCache {
      * 扩展缓存数组
      */
     private void expand(){
-        featureSizeMax += 5000000;
+        featureSizeMax += 1000000;
         byte[][] newFeatureArr = new byte[featureSizeMax][32];
         System.arraycopy(featureArr, 0, newFeatureArr, 0, newFeatureArr.length);
         String[] newEsIdArr = new String[featureSizeMax];

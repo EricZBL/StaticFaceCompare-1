@@ -28,9 +28,10 @@ public class DealWithDelete {
             fileManager.loadData();
             return;
         }
-        log.info("There delete options in the log");
+        log.info("There are delete options in the log");
         log.info("Deal With it");
         List<String> filePathes = FileStreamManager.getInstanse().getFilePathes();
+        FileStreamManager.getInstanse().closeWriters();
         for(String filPath : filePathes){
             reLoad(filPath);
         }

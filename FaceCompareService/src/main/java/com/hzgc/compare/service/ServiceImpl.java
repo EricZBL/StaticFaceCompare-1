@@ -6,6 +6,7 @@ import com.hzgc.common.SearchResult;
 import com.hzgc.common.Service;
 import com.hzgc.common.UpdateParam;
 import com.hzgc.common.rpc.client.result.AllReturn;
+import com.hzgc.common.rpc.server.annotation.RpcService;
 import com.hzgc.compare.Config;
 import com.hzgc.compare.cache.FeatureCache;
 import com.hzgc.compare.compare.CompareOnePerson;
@@ -18,6 +19,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 
 @Slf4j
+@RpcService(com.hzgc.common.Service.class)
 public class ServiceImpl implements Service {
     private int serviceNum = Config.SERVICE_NUM;
     private int serviceId = Config.SERVICE_ID;
@@ -32,6 +34,7 @@ public class ServiceImpl implements Service {
     public AllReturn<Boolean> add(UpdateParam updateParam) {
         String city = updateParam.getIdCard().substring(0, 4);
         if(city.hashCode() % serviceNum == serviceId){
+            log.info("Add data " + updateParam.getEsId());
             FileManager fileManager = new FileManager();
             byte[] bitFeature = FaceUtil.base64Str2BitFeature(updateParam.getBitFeature());
             fileManager.write(updateParam.getIdCard(), updateParam.getEsId(), bitFeature);
@@ -44,6 +47,7 @@ public class ServiceImpl implements Service {
     public AllReturn<Boolean> delete(UpdateParam updateParam) {
         String city = updateParam.getIdCard().substring(0, 4);
         if(city.hashCode() % serviceNum == serviceId){
+            log.info("Delete data " + updateParam.getEsId());
             BufferedWriter writer = FileStreamManager.getInstanse().getEditWriter();
             try {
                 writer.write(updateParam.getEsId(), 0, updateParam.getEsId().length());

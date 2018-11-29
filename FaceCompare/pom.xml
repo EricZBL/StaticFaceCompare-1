@@ -88,12 +88,24 @@
         </dependency>
         <dependency>
             <groupId>com.hzgc</groupId>
-            <artifactId>Common</artifactId>
+            <artifactId>Client</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-api</artifactId>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-all</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-buffer</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.elasticsearch</groupId>
+                    <artifactId>elasticsearch</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.hzgc</groupId>
+                    <artifactId>FaceCompareService</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
