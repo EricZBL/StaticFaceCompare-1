@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -26,11 +27,21 @@ public class UserServiceImplTest {
     private UserRepository userRepository;
 
     @Test
-    public void insert() {
+    public void insert() throws IOException {
 
         List<Person> list = new ArrayList<>();
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream("C:\\Users\\ZBL\\Desktop\\test3.jpeg");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
-        for(int i = 0; i < 10000; i ++){
+        //Construct BufferedReader from InputStreamReader
+        BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+
+        String line = null;
+        while ((line = br.readLine()) != null){
 
         Person person = new Person();
 

@@ -53,3 +53,71 @@ services:
     - /usr/lib64/ld-linux-x86-64.so.2:/lib/ld-linux-x86-64.so.2
     - /etc/localtime:/etc/localtime:ro
 
+  compareservice-0:
+    image: ${DOCKER_REPOSITOR}/hzgc/compare-static:${VERSION}
+    depends_on:
+      - zookeeper
+      - esearch
+    container_name: compare-0
+    restart: always
+    environment:
+    - ZOOKEEPER_HOST=${ZK_HOST}:${ZK_PORT}
+    - ES_HOST=${ES_HOST}
+    - SERVICE_ID=0
+    network_mode: "host"
+    volumes:
+      - /data/static/log:/facecompare/log
+      - /data/static/data:/facecompare/matedata
+      - /data/static/conf:/facecompare/conf
+
+  compareservice-1:
+    image: ${DOCKER_REPOSITOR}/hzgc/compare-static:${VERSION}
+    depends_on:
+    - zookeeper
+    - esearch
+    container_name: compare-1
+    restart: always
+    environment:
+    - ZOOKEEPER_HOST=${ZK_HOST}:${ZK_PORT}
+    - ES_HOST=${ES_HOST}
+    - SERVICE_ID=1
+    network_mode: "host"
+    volumes:
+    - /data/static/log:/facecompare/log
+    - /data/static/data:/facecompare/matedata
+    - /data/static/conf:/facecompare/conf
+
+  compareservice-2:
+    image: ${DOCKER_REPOSITOR}/hzgc/compare-static:${VERSION}
+    depends_on:
+    - zookeeper
+    - esearch
+    container_name: compare-2
+    restart: always
+    environment:
+    - ZOOKEEPER_HOST=${ZK_HOST}:${ZK_PORT}
+    - ES_HOST=${ES_HOST}
+    - SERVICE_ID=2
+    network_mode: "host"
+    volumes:
+    - /data/static/log:/facecompare/log
+    - /data/static/data:/facecompare/matedata
+    - /data/static/conf:/facecompare/conf
+
+  compareservice-3:
+    image: ${DOCKER_REPOSITOR}/hzgc/compare-static:${VERSION}
+    depends_on:
+    - zookeeper
+    - esearch
+    container_name: compare-3
+    restart: always
+    environment:
+    - ZOOKEEPER_HOST=${ZK_HOST}:${ZK_PORT}
+    - ES_HOST=${ES_HOST}
+    - SERVICE_ID=3
+    network_mode: "host"
+    volumes:
+    - /data/static/log:/facecompare/log
+    - /data/static/data:/facecompare/matedata
+    - /data/static/conf:/facecompare/conf
+
