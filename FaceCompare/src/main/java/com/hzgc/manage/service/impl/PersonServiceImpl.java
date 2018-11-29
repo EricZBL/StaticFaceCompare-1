@@ -1,7 +1,10 @@
 package com.hzgc.manage.service.impl;
 
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.IdcardUtil;
 import com.hzgc.exception.HzgcException;
 import com.hzgc.manage.dao.PersonRepository;
 import com.hzgc.manage.dto.PersonDto;
@@ -18,7 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -78,7 +87,21 @@ public class PersonServiceImpl implements PersonService {
         person.setCsd(personDto.getCsd());
         person.setCym(personDto.getCym());
         person.setJg(personDto.getJg());
-        person.setTp(personDto.getTp());
+        boolean valid = IdcardUtil.isValidCard(personDto.getSfz());
+        String province = personDto.getSfz().substring(0,2);
+        System.out.println(province);
+        String city =personDto.getSfz().substring(2,4);
+        System.out.println(city);
+        String town =personDto.getSfz().substring(4,6);
+        System.out.println(town);
+        Short year = IdcardUtil.getYearByIdCard(personDto.getSfz());
+        System.out.println(year);
+        String   month = personDto.getSfz().substring(10,12);
+        System.out.println(month);
+        String path = province+"/"+city+"/"+town+"/"+year+"/"+month+"/"+personDto.getSfz();
+        System.out.println(path);
+        this.writeLocalStrOne(personDto.getTp(), path);
+        person.setTp(path);
         personRepository.save(person);
     }
 
@@ -105,7 +128,21 @@ public class PersonServiceImpl implements PersonService {
         person.setCsd(personDto.getCsd());
         person.setCym(personDto.getCym());
         person.setJg(personDto.getJg());
-        person.setTp(personDto.getTp());
+        boolean valid = IdcardUtil.isValidCard(personDto.getSfz());
+        String province = personDto.getSfz().substring(0,2);
+        System.out.println(province);
+        String city =personDto.getSfz().substring(2,4);
+        System.out.println(city);
+        String town =personDto.getSfz().substring(4,6);
+        System.out.println(town);
+        Short year = IdcardUtil.getYearByIdCard(personDto.getSfz());
+        System.out.println(year);
+        String   month = personDto.getSfz().substring(10,12);
+        System.out.println(month);
+        String path = province+"/"+city+"/"+town+"/"+year+"/"+month+"/"+personDto.getSfz();
+        System.out.println(path);
+        this.writeLocalStrOne(personDto.getTp(), path);
+        person.setTp(path);
         this.save(person);
     }
 
@@ -172,4 +209,22 @@ public class PersonServiceImpl implements PersonService {
         return personRepository.findAll(pageable);
     }
 
-}
+    private  static void writeLocalStrOne(String str,String path){
+        try {
+         byte[] bytes = Base64Utils.base64Str2BinArry(str);
+
+         if(StringUtils.isNotBlank(path)){
+
+             File imageFile = new File(path);
+             //创建输出流
+             FileOutputStream outStream = new FileOutputStream(imageFile);
+             //写入数据
+             outStream.write(bytes);
+         }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    }
