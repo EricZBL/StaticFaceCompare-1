@@ -2,6 +2,7 @@ package com.hzgc.compare.compare;
 
 import com.hzgc.common.Person;
 import com.hzgc.common.SearchResult;
+import com.hzgc.compare.Config;
 import com.hzgc.compare.cache.FeatureCache;
 import com.hzgc.compare.es.ElasticSearchClient;
 import com.hzgc.jniface.CompareResult;
@@ -14,7 +15,8 @@ import java.util.List;
 
 @Slf4j
 public class CompareOnePerson {
-    private static int RES_FIRST_COMPARE = 500;
+    private static int RES_FIRST_COMPARE = Config.RES_FIRST_COMPARE;
+    private static int RES_SECOND_COMPARE = Config.RES_SECOND_COMPARE;
     private FeatureCache featureCache;
 
     public CompareOnePerson(){
@@ -50,6 +52,7 @@ public class CompareOnePerson {
         log.info("The time read from ES used is " + (readFeomES - firstCompared));
 
         SearchResult res = compareSecond(personDtos, feature, sim);
+        res.take(RES_SECOND_COMPARE);
         long secondCompared = System.currentTimeMillis();
         log.info("The time second compare used is " + (secondCompared - readFeomES));
 
