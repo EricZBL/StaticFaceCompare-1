@@ -67,7 +67,7 @@ public interface UserService {
     /**
      * 根据账号用户名、密码登录
      */
-    void login(UserLoginDto userLoginDto, String logname);
+    User login(UserLoginDto userLoginDto, String logname);
 
     /**
      * 返回所有数据

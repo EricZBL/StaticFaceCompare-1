@@ -4,6 +4,7 @@ import com.hzgc.manage.dto.PersonDto;
 import com.hzgc.manage.dto.PersonQueryDto;
 import com.hzgc.manage.entity.Log;
 import com.hzgc.manage.entity.Person;
+import com.hzgc.utils.PageUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,7 +16,7 @@ public interface PersonService {
     /**
      * 返回分页
      */
-    Page<Person> findPageByXmSfz(PersonQueryDto personQueryDto, Pageable pageable, Log log);
+    PageUtils<Person> findPageByXmSfz(PersonQueryDto personQueryDto, Pageable pageable, Log log);
 
     /**
      * 新增Person实体
@@ -49,4 +50,5 @@ public interface PersonService {
     void deleteById(String id);
 
 
+    byte[] getImage(String personid);
 }

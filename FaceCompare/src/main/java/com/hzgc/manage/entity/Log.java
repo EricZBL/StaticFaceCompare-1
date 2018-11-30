@@ -14,7 +14,7 @@ import java.util.Date;
  * 日志实体对象
  * created by liang on 2018/11/16
  */
-@Document(indexName = "managelog", type = "Log", shards = 1, replicas = 0)
+@Document(indexName = "managerlog", type = "Log", shards = 1, replicas = 0)
 public class Log implements Serializable {
 
     /**
@@ -31,6 +31,7 @@ public class Log implements Serializable {
     /**
      * 账号名称
      */
+    @Field( type = FieldType.Keyword)
     private String username;
 
     /**
@@ -39,14 +40,19 @@ public class Log implements Serializable {
     private String userid;
 
     /**
-     * 性别（xb）
+     * （xb）
      */
     private String personname;
 
     /**
-     * 民族（mz）
+     * 图片（mz）
      */
     private String personpic;
+
+    /**
+     * 被操作人口id（mz）
+     */
+    private String personid;
 
     /**
      * 用户创建时间

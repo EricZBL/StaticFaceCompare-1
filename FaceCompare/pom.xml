@@ -23,6 +23,7 @@
         <swagger-ui.version>2.9.2</swagger-ui.version>
         <projectlombok.version>1.16.18</projectlombok.version>
         <hutool.version>4.1.19</hutool.version>
+        <spring.web.servlet-version>3.2.2.RELEASE</spring.web.servlet-version>
     </properties>
 
     <dependencies>
@@ -107,7 +108,16 @@
                     <groupId>com.hzgc</groupId>
                     <artifactId>FaceCompareService</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.web.servlet</artifactId>
+            <version>${spring.web.servlet-version}</version>
         </dependency>
     </dependencies>
 
@@ -118,6 +128,16 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <targetPath>${project.build.directory}</targetPath>
+                <directory>docker</directory>
+                <includes>
+                    <include>**</include>
+                </includes>
+            </resource>
+        </resources>
+        <finalName>face-compare</finalName>
     </build>
 
 

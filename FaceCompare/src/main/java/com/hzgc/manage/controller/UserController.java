@@ -1,5 +1,6 @@
 package com.hzgc.manage.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.hzgc.manage.dto.*;
 import com.hzgc.manage.entity.Log;
 import com.hzgc.manage.entity.User;
@@ -7,6 +8,7 @@ import com.hzgc.manage.enums.UserStatusEnums;
 import com.hzgc.manage.service.UserService;
 import com.hzgc.manage.vo.ResultVO;
 import com.hzgc.utils.AnnUtils;
+import com.hzgc.utils.PageUtils;
 import com.hzgc.utils.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,7 +24,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户web层
@@ -41,8 +46,13 @@ public class UserController {
     @ApiOperation(value = "账号登录")
     @RequestMapping(value = "login", method = RequestMethod.POST)
     public ResultVO<String> login(@RequestBody @Valid UserLoginDto userLoginDto) {
-        userService.login(userLoginDto, AnnUtils.getApiValue(USER_CONTROLLER_CLASS_NAME, "login"));
-        return ResultUtils.success();
+        User user = userService.login(userLoginDto, AnnUtils.getApiValue(USER_CONTROLLER_CLASS_NAME, "login"));
+        HashMap<String, String> map = new HashMap<>();
+        map.put("userId", user.getId());
+        map.put("username", user.getUsername());
+        List<Map<String, String>> list = new ArrayList<>();
+        list.add(map);
+        return ResultUtils.success(list);
     }
 
     @ApiOperation(value = "查询账号列表")
@@ -55,14 +65,21 @@ public class UserController {
 
     }
 
-    @ApiOperation(value = "查询账号分页列表")
-    @RequestMapping(value = "pageList", method = RequestMethod.POST)
-    public ResultVO<Page> pageList(@RequestBody UserQueryDto userQueryDto){
+            @ApiOperation(value = "查询账号分页列表")
+            @RequestMapping(value = "pageList", method = RequestMethod.POST)
+    public ResultVO<PageUtils> pageList(@RequestBody UserQueryDto userQueryDto){
 
         Log log = new Log(userQueryDto.getUserId(), AnnUtils.getApiValue(USER_CONTROLLER_CLASS_NAME, "pageList"));
-            Pageable pageable =  PageRequest.of(userQueryDto.getPage(), userQueryDto.getSize());
+            Pageable pageable =  PageRequest.of(userQueryDto.getPage() - 1, userQueryDto.getSize());
             Page<User> page = userService.findPageByUserName(userQueryDto.getUsername(), pageable, log);
-        return ResultUtils.success(page);
+
+        PageUtils<User> userPage = new PageUtils<>();
+                BeanUtil.copyProperties(page, userPage);
+                userPage.setNumber(page.getNumber() + 1);
+                userPage.setTotalElements(page.getTotalElements());
+                userPage.setSize(page.getSize());
+
+        return ResultUtils.success(userPage);
     }
 
     @ApiOperation(value = "新增账号")

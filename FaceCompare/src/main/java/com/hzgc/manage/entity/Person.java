@@ -1,7 +1,10 @@
 package com.hzgc.manage.entity;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.io.Serializable;
 
@@ -9,7 +12,7 @@ import java.io.Serializable;
  * 人口实体对象
  * created by liang on 2018/11/16
  */
-@Document(indexName = "manageperson", type = "Person", shards = 1, replicas = 0)
+@Document(indexName = "managerperson", type = "Person", shards = 1, replicas = 0)
 public class Person implements Serializable {
 
     /**
@@ -21,11 +24,13 @@ public class Person implements Serializable {
     /**
      * 身份证（sfz）
      */
+    @Field( type = FieldType.Keyword)
     private String sfz;
 
     /**
      * 姓名（xm）
      */
+    @Field( type = FieldType.Keyword)
     private String xm;
 
     /**
@@ -79,9 +84,14 @@ public class Person implements Serializable {
     private String jg;
 
     /**
-     * base64图片（tp）
+     * 图片路径（tp）
      */
     private String tp;
+
+    /**
+     * base64图片（tpbase）
+     */
+    private String tpbase;
 
     /**
      * 特征值（tzz）
@@ -215,6 +225,14 @@ public class Person implements Serializable {
 
     public String getBittzz() {
         return bittzz;
+    }
+
+    public String getTpbase() {
+        return tpbase;
+    }
+
+    public void setTpbase(String tpbase) {
+        this.tpbase = tpbase;
     }
 
     public void setBittzz(String bittzz) {

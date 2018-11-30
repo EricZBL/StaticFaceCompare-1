@@ -14,7 +14,7 @@ import java.util.Date;
  * 用户实体对象
  * created by liang on 2018/11/16
  */
-@Document(indexName = "manageuser", type = "User", shards = 1, replicas = 0)
+@Document(indexName = "manageruser", type = "User", shards = 1, replicas = 0)
 public class User implements Serializable {
 
     /**
@@ -26,6 +26,7 @@ public class User implements Serializable {
     /**
      * 用户姓名（账号名称）
      */
+    @Field( type = FieldType.Keyword)
     private String username;
 
     /**
