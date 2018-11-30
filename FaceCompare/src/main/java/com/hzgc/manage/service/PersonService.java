@@ -1,12 +1,18 @@
 package com.hzgc.manage.service;
 
+import com.hzgc.jniface.BigPictureData;
 import com.hzgc.manage.dto.PersonDto;
 import com.hzgc.manage.dto.PersonQueryDto;
+import com.hzgc.manage.dto.SearchDto;
 import com.hzgc.manage.entity.Log;
 import com.hzgc.manage.entity.Person;
+import com.hzgc.manage.vo.SingleSearchResult;
 import com.hzgc.utils.PageUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * created by liang on 2018/11/16
@@ -26,7 +32,7 @@ public interface PersonService {
     /**
      * 修改Person实体
      */
-    void update(PersonDto personDto);
+    void update(PersonDto personDto, Log log);
 
     /**
      * 保存Person实体
@@ -47,8 +53,15 @@ public interface PersonService {
     /**
      * 根据ID查询单一对象
      */
-    void deleteById(String id);
+    void deleteById(String id, Log log);
 
 
     byte[] getImage(String personid);
+
+    /**
+     * 提取特征值
+     */
+    BigPictureData featureExtractByImage(MultipartFile imageBin, Log log);
+
+    SingleSearchResult search_picture(SearchDto searchDto);
 }

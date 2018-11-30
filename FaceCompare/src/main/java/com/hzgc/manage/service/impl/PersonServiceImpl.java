@@ -1,53 +1,70 @@
 package com.hzgc.manage.service.impl;
 
 
-import cn.hutool.core.date.DateTime;
-import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.IdcardUtil;
+import com.hzgc.common.CompareParam;
+import com.hzgc.common.SearchResult;
 import com.hzgc.exception.HzgcException;
-import com.hzgc.jniface.FaceCompareUtil;
+import com.hzgc.jniface.*;
+import com.hzgc.manage.dao.MemoryDao;
 import com.hzgc.manage.dao.PersonRepository;
 import com.hzgc.manage.dto.PersonDto;
 import com.hzgc.manage.dto.PersonQueryDto;
+import com.hzgc.manage.dto.SearchDto;
 import com.hzgc.manage.entity.Log;
 import com.hzgc.manage.entity.Person;
+import com.hzgc.manage.entity.User;
 import com.hzgc.manage.enums.ExceptionCodeEnums;
 import com.hzgc.manage.service.LogService;
 import com.hzgc.manage.service.PersonService;
+import com.hzgc.manage.service.UserService;
+import com.hzgc.manage.vo.PersonVO;
+import com.hzgc.manage.vo.SingleSearchResult;
 import com.hzgc.utils.Base64Utils;
 import com.hzgc.utils.ImageUtil;
 import com.hzgc.utils.PageUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
  * created by liang on 18-11-16
  */
 @Service
+@Slf4j
 public class PersonServiceImpl implements PersonService {
 
     @Autowired
     private PersonRepository personRepository;
 
     @Autowired
-    private LogService logService;
+    private LogService logsService;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
     private Client client;
+
+    @Autowired
+    private MemoryDao memoryDao;
 
 
     @Override
-    public PageUtils<Person> findPageByXmSfz(PersonQueryDto personQueryDto, Pageable pageable, Log log) {
+    public PageUtils<Person> findPageByXmSfz(PersonQueryDto personQueryDto, Pageable pageable, Log logs) {
 
         Page<Person> personPage = this.findPersonPage(personQueryDto, pageable);
 
@@ -58,86 +75,110 @@ public class PersonServiceImpl implements PersonService {
 
         List<Person> content = personPage.getContent();
 
-        //        content.stream().forEach(e -> {
-        //            e.setTpbase(Base64Utils.getImageStr(e.getTp()));
-        //        });
         for (Person person : content) {
             String tp = person.getTp();
             if (StringUtils.isBlank(tp)) {
                 continue;
             }
-                person.setTpbase(Base64Utils.getImageStr(tp));
+            person.setTpbase(Base64Utils.getImageStr(tp));
         }
         page.setContent(content);
-        return page;
 
+        //写入日志
+        this.insertLog(logs);
+        return page;
     }
 
     @Override
-    public void insert(PersonDto personDto, Log log) {
+    @Transactional
+    public void insert(PersonDto personDto, Log logs) {
+
         String idcard = personDto.getSfz();
         String name = personDto.getXm();
         if (StringUtils.isBlank(idcard)) throw new HzgcException(ExceptionCodeEnums.PARAM_ERROR);
         if (StringUtils.isBlank(name)) throw new HzgcException(ExceptionCodeEnums.PARAM_ERROR);
+
         Person person = new Person();
+        BeanUtil.copyProperties(personDto, person);
+
         person.setId(IdUtil.simpleUUID());
-        person.setSfz(idcard);
-        person.setXm(name);
-        person.setXb(personDto.getXb());
-        person.setMz(personDto.getMz());
-        person.setSr(personDto.getSr());
-        person.setSsssqx(personDto.getSsssqx());
-        person.setJd(personDto.getJd());
-        person.setMp(personDto.getMp());
-        person.setMlxz(personDto.getMlxz());
-        person.setCsd(personDto.getCsd());
-        person.setCym(personDto.getCym());
-        person.setJg(personDto.getJg());
+
         if (IdcardUtil.isValidCard(personDto.getSfz())) throw new HzgcException(ExceptionCodeEnums.IDCARD_FORMAT_ERROR);
-        String province = personDto.getSfz().substring(0,2);
-        String city =personDto.getSfz().substring(2,4);
-        String town =personDto.getSfz().substring(4,6);
+
+        String province = personDto.getSfz().substring(0, 2);
+        String city = personDto.getSfz().substring(2, 4);
+        String town = personDto.getSfz().substring(4, 6);
         Short year = IdcardUtil.getYearByIdCard(personDto.getSfz());
-        String month = personDto.getSfz().substring(10,12);
-        String path = "D:\\"+province+"\\"+city+"\\"+town+"\\"+year+"\\"+month+"\\"+personDto.getSfz()+"\\"+person.getId()+".jpeg";
-        this.writeLocalStrOne(personDto.getTp(), path);
-        person.setTp(path);
+        String month = personDto.getSfz().substring(10, 12);
+        String path = "/srv/testdata/" + province + "/" + city + "/" + town + "/" + year + "/" + month + "/" + personDto.getSfz() + "/" + person.getId() + ".jpeg";
+//        String path = "D:\\" + province + "\\" + city + "\\" + town + "\\" + year + "\\" + month + "\\" + personDto.getSfz() + "\\" + person.getId() + ".jpeg";
+        String tp = personDto.getTp();
+
+        if (StringUtils.isNotBlank(tp) && StringUtils.isNotBlank(path)) {
+            byte[] bytes = Base64Utils.base64Str2BinArry(tp);
+            ImageUtil.save(path, bytes);
+            person.setTp(path);
+
+            //TODO提取特征值
+            FaceAttribute faceAttribute = FaceFunction.faceFeatureExtract(Base64Utils.base64Str2BinArry(tp), PictureFormat.JPG);
+            String bittzz = FaceUtil.bitFeautre2Base64Str(faceAttribute.getBitFeature());
+            String ttz = FaceUtil.floatFeature2Base64Str(faceAttribute.getFeature());
+            person.setTzz(ttz);
+            person.setBittzz(bittzz);
+
+        }
         personRepository.save(person);
+        //写入日志
+        this.insertLog(logs);
+        //client.addData();
     }
 
     @Override
-    public void deleteById(String id) {
-        if (StringUtils.isNotBlank(id)) throw new HzgcException(ExceptionCodeEnums.PARAM_ERROR);
+    public void deleteById(String id, Log logs) {
+        if (StringUtils.isBlank(id)) throw new HzgcException(ExceptionCodeEnums.PARAM_ERROR);
+        //写入日志
+        this.insertLog(logs);
         personRepository.deleteById(id);
-
     }
 
     @Override
-    public void update(PersonDto personDto) {
+    @Transactional
+    public void update(PersonDto personDto, Log logs) {
+        if (StringUtils.isBlank(personDto.getPeopleId()))
+            throw new HzgcException(ExceptionCodeEnums.PERSONID_ISNOT_ERROR);
         Person person = new Person();
-        person.setId(personDto.getPeopleId());
-        person.setSfz(personDto.getSfz());
-        person.setXm(personDto.getXm());
-        person.setXb(personDto.getXb());
-        person.setMz(personDto.getMz());
-        person.setSr(personDto.getSr());
-        person.setSsssqx(personDto.getSsssqx());
-        person.setJd(personDto.getJd());
-        person.setMp(personDto.getMp());
-        person.setMlxz(personDto.getMlxz());
-        person.setCsd(personDto.getCsd());
-        person.setCym(personDto.getCym());
-        person.setJg(personDto.getJg());
+        BeanUtil.copyProperties(personDto, person);
+        person.setId(IdUtil.simpleUUID());
+
         if (IdcardUtil.isValidCard(personDto.getSfz())) throw new HzgcException(ExceptionCodeEnums.IDCARD_FORMAT_ERROR);
-        String province = personDto.getSfz().substring(0,2);
-        String city =personDto.getSfz().substring(2,4);
-        String town =personDto.getSfz().substring(4,6);
+        String province = personDto.getSfz().substring(0, 2);
+        String city = personDto.getSfz().substring(2, 4);
+        String town = personDto.getSfz().substring(4, 6);
         Short year = IdcardUtil.getYearByIdCard(personDto.getSfz());
-        String month = personDto.getSfz().substring(10,12);
-        String path = "D:\\"+province+"\\"+city+"\\"+town+"\\"+year+"\\"+month+"\\"+personDto.getSfz()+"\\"+personDto.getPeopleId()+".jpeg";
-        this.writeLocalStrOne(personDto.getTp(), path);
-        person.setTp(path);
-        this.save(person);
+        String month = personDto.getSfz().substring(10, 12);
+        String path = "/srv/testdata/" + province + "/" + city + "/" + town + "/" + year + "/" + month + "/" + personDto.getSfz() + "/" + person.getId() + ".jpeg";
+//        String path = "D:\\" + province + "\\" + city + "\\" + town + "\\" + year + "\\" + month + "\\" + personDto.getSfz() + "\\" + person.getId() + ".jpeg";
+        String tp = personDto.getTp();
+        if (StringUtils.isNotBlank(tp) && StringUtils.isNotBlank(path)) {
+            byte[] bytes = Base64Utils.base64Str2BinArry(tp);
+            ImageUtil.save(path, bytes);
+            person.setTp(path);
+            //提取特征值
+            FaceAttribute faceAttribute = FaceFunction.faceFeatureExtract(Base64Utils.base64Str2BinArry(tp), PictureFormat.JPG);
+            String bittzz = FaceUtil.bitFeautre2Base64Str(faceAttribute.getBitFeature());
+            String ttz = FaceUtil.floatFeature2Base64Str(faceAttribute.getFeature());
+            person.setTzz(ttz);
+            person.setBittzz(bittzz);
+        }
+        personRepository.save(person);
+        client.addData(person.getId(),person.getTzz(),person.getSfz());
+
+        //写入日志
+        this.insertLog(logs);
+        personRepository.deleteById(personDto.getPeopleId());
+
+        client.delete(personDto.getPeopleId(),personDto.getSfz());
+
     }
 
     @Override
@@ -151,29 +192,97 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public Person findById(String id, Log log) {
+    public Person findById(String id, Log logs) {
         if (id == null) {
             return null;
         }
         return personRepository.findById(id).get();
     }
 
-//    @Override
-//    public PageUtils<Person> searchByXm(String xm, Pageable pageable) {
-//        if (xm == null) return  null;
-//        return personRepository.findByXmLike(xm, pageable);
-//    }
-//
-//    @Override
-//    public PageUtils<Person> searchBySfz(String sfz, Pageable pageable) {
-//        if (sfz == null) return  null;
-//        return personRepository.findBySfzLike(sfz, pageable);
-//    }
-//
-//    @Override
-//    public PageUtils<Person> search(String sfz, String xm, Pageable pageable) {
-//        return personRepository.findBySfzLikeOrXmLike(sfz, xm, pageable);
-//    }
+    @Override
+    public BigPictureData featureExtractByImage(MultipartFile image, Log logs) {
+
+        byte[] imageBytes = null;
+        try {
+            imageBytes = image.getBytes();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String imageType = null;
+        BigPictureData bigPictureData = new BigPictureData();
+        ArrayList<PictureData> smallPictures = new ArrayList<>();
+        log.info("start extract");
+        ArrayList<SmallImage> smallImages = FaceFunction.faceCheck(imageBytes, PictureFormat.JPG, PictureFormat.LEVEL_WIDTH_3);
+        log.info("stop extract");
+        if (null != smallImages && smallImages.size() > 0) {
+            log.info("smallImage's size:::"+smallImages.size());
+            for (SmallImage smallImage : smallImages) {
+                PictureData pictureData = new PictureData();
+                pictureData.setImageData(smallImage.getPictureStream());
+                pictureData.setImageID(IdUtil.simpleUUID());
+                pictureData.setFeature(smallImage.getFaceAttribute());
+                pictureData.setImage_coordinate(smallImage.getFaceAttribute().getImage_coordinate());
+                imageType = smallImage.getImageType();
+                smallPictures.add(pictureData);
+                log.info("pictureStream:::" + smallImage.getPictureStream());
+            }
+            bigPictureData.setImageType(imageType);
+            bigPictureData.setSmallImages(smallPictures);
+            bigPictureData.setTotal(smallPictures.size());
+            bigPictureData.setImageID(IdUtil.simpleUUID());
+            bigPictureData.setImageData(imageBytes);
+            //写日志
+            log.info("start insert log");
+            this.insertLog(logs);
+            log.info("end insert log");
+
+            return bigPictureData;
+        }
+        log.info("return null");
+        return null;
+    }
+
+    @Override
+    public SingleSearchResult search_picture(SearchDto searchDto) {
+        Integer page = searchDto.getPage();
+        Integer size = searchDto.getSize();
+        if (searchDto.getSearchId() != null) {
+            SingleSearchResult singleSearchResult = memoryDao.getSearchRes(searchDto.getSearchId());
+            List<PersonVO> list = singleSearchResult.getPersonVOS();
+            List<PersonVO> personVOList = new ArrayList<>();
+            for (int i = size * (page - 1); i < size * page; i++) {
+                personVOList.add(list.get(i));
+            }
+            singleSearchResult.setPersonVOS(personVOList);
+            return singleSearchResult;
+        }
+        CompareParam compareParam = new CompareParam(FaceUtil.base64Str2BitFeature(searchDto.getBittzz()), FaceUtil.base64Str2floatFeature(searchDto.getTzz()), 80);
+        SearchResult compareresult = client.compare(compareParam);
+        SearchResult.Record[] records = compareresult.getRecords();
+        SingleSearchResult singleSearchResult = new SingleSearchResult();
+        List<PersonVO> personVOS = new ArrayList<>();
+        for (SearchResult.Record record : records) {
+            Person person = (Person) record.getValue();
+            PersonVO personVO = new PersonVO();
+            BeanUtil.copyProperties(person, personVO);
+            personVO.setSim(record.getKey());
+            personVO.setTpbase(Base64Utils.getImageStr(person.getTp()));
+            personVOS.add(personVO);
+        }
+        singleSearchResult.setPersonVOS(personVOS);
+        singleSearchResult.setSearchId(IdUtil.simpleUUID());
+        singleSearchResult.setTotal(records.length);
+
+        memoryDao.insertSearchRes(singleSearchResult);
+        if (records.length > size) {
+            List<PersonVO> personVOList = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                personVOList.add(personVOS.get(i));
+            }
+            singleSearchResult.setPersonVOS(personVOList);
+        }
+        return singleSearchResult;
+    }
 
 
     @Override
@@ -203,9 +312,13 @@ public class PersonServiceImpl implements PersonService {
         return personRepository.findAll(pageable);
     }
 
-    private  static void writeLocalStrOne(String str,String path) {
-        byte[] bytes = Base64Utils.base64Str2BinArry(str);
-        boolean save = ImageUtil.save(path, bytes);
-
+    private void insertLog(Log logs) {
+        logs.setId(IdUtil.simpleUUID());
+        User user = userService.selectOneById(logs.getUserid());
+        logs.setUsername(user.getUsername());
+        logs.setCreatetime(new Date());
+        logsService.save(logs);
     }
+
+
 }

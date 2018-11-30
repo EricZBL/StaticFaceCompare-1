@@ -16,11 +16,6 @@ import java.util.List;
 public interface LogRepository extends ElasticsearchRepository<Log, String> {
 
     /**
-     * 按照账号姓名模糊匹配
-     */
-    Page<Log> findByUsername(String username, Pageable pageable);
-
-    /**
      * 按照姓名、时间匹配
      */
     Page<Log> findByUsernameLikeOrCreatetimeBetween(String username,  String starttime, String endtime, Pageable pageable);

@@ -1,6 +1,7 @@
 package com.hzgc.utils;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 
 import javax.imageio.stream.FileImageOutputStream;
 import java.io.File;
@@ -8,6 +9,15 @@ import java.io.IOException;
 
 @Slf4j
 public class ImageUtil {
+
+    public static boolean writeLocalStrOne(String str,String path) {
+        System.out.println(str);
+        if(StringUtils.isBlank(str) && StringUtils.isBlank(path)){
+            return false;
+        }
+        byte[] bytes = Base64Utils.base64Str2BinArry(str);
+        return  ImageUtil.save(path, bytes);
+    }
 
     /**
      * @param filePath 文件路径

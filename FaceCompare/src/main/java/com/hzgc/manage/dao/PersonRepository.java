@@ -11,11 +11,6 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 public interface PersonRepository extends ElasticsearchRepository<Person, String> {
 
     /**
-     * 按照姓名或者身份证模糊匹配
-     */
-    Page<Person> findBySfzLikeOrXmLike(String sfz, String xm, Pageable pageable);
-
-    /**
      * 按照身份证模糊匹配
      */
     Page<Person> findBySfzLike(String sfz, Pageable pageable);

@@ -173,7 +173,7 @@ public class UserServiceImpl implements UserService {
         return list;
     }
 
-    private User selectOneById(String id){
+    public User selectOneById(String id){
         if (StringUtils.isBlank(id))  throw new HzgcException(ExceptionCodeEnums.USERID_ISNOT_BLANK);
         return userRepository.findById(id).get();
     }

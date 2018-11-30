@@ -73,4 +73,6 @@ public interface UserService {
      * 返回所有数据
      */
     List<User> findTotalByUserName(String username, Log log);
+
+     User selectOneById(String id);
 }

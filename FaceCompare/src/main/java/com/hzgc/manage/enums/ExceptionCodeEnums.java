@@ -13,6 +13,8 @@ public enum ExceptionCodeEnums {
 
     IDCARD_FORMAT_ERROR(400 , "身份证格式不正确"),
 
+    PERSONID_ISNOT_ERROR(400 , "人口ID必传"),
+
     USERID_ISNOT_BLANK(400 , "账号ID不能为空"),
 
     USERNAME_ISNOT_BLANK(400 , "账号名称不能为空"),

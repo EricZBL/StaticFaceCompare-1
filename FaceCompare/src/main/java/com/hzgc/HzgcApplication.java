@@ -9,7 +9,8 @@ public class HzgcApplication {
 
     public static void main(String[] args) {
 
+        FaceFunction.init();
         SpringApplication.run(HzgcApplication.class, args);
-//        FaceFunction.init();
+
     }
 }

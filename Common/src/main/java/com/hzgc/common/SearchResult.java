@@ -110,7 +110,7 @@ public class SearchResult {
 
     public static class Record implements  Comparable<Record>{
         float sim;
-        Object body;
+        Object body; //person
         public Record(float sim, Object body){
             this.sim = sim;
             this.body = body;

@@ -1,39 +1,33 @@
-package com.hzgc.manage.dto;
+package com.hzgc.manage.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
 /**
- * 人口实体对象 (JSR303参数校验)
+ * 人口对象
  * created by liang on 2018/11/16
  */
 @Data
-@ApiModel(value="PersonDto人口对象",description="人口对象入参")
-public class PersonDto implements Serializable {
-    /**
-     * 登录账号ID
-     */
-    @NotEmpty(message = "登录账号userId不能为空")
-    @ApiModelProperty(value="登录账号userId",name="userId",example="")
-    private String userId;
+public class PersonVO implements Serializable {
 
-    @ApiModelProperty(value="人口Id",name="peopleId",example="")
-    private String peopleId;
+    /**
+     * 人口ID
+     */
+    private String id;
 
     /**
      * 身份证（sfz）
      */
-    @NotEmpty(message = "用户名不能为空")
     private String sfz;
 
     /**
      * 姓名（xm）
      */
-    @NotEmpty(message = "用户名不能为空")
     private String xm;
 
     /**
@@ -87,8 +81,27 @@ public class PersonDto implements Serializable {
     private String jg;
 
     /**
-     * base64图片（tp）
+     * 图片路径（tp）
      */
     private String tp;
 
+    /**
+     * base64图片（tpbase）
+     */
+    private String tpbase;
+
+    /**
+     * 特征值（tzz）
+     */
+    private String tzz;
+
+    /**
+     * bit特征值（bittzz）
+     */
+    private String bittzz;
+
+    /**
+     * 相似度(sim)
+     */
+    private Float sim;
 }

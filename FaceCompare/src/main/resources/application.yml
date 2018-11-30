@@ -1,0 +1,13 @@
+server:
+  port: 8083
+spring:
+  data:
+    elasticsearch:
+      cluster-name: docker-cluster
+      cluster-nodes: 172.18.18.138:9300
+      repositories:
+        enabled: true
+zk:
+  address: 172.18.18.202:2181
+logging:
+  config: classpath:logback-boot.xml
