@@ -11,6 +11,8 @@ public enum ExceptionCodeEnums {
 
     PARAM_ERROR(400 , "参数格式不正确"),
 
+    IDCARD_FORMAT_ERROR(400 , "身份证格式不正确"),
+
     USERID_ISNOT_BLANK(400 , "账号ID不能为空"),
 
     USERNAME_ISNOT_BLANK(400 , "账号名称不能为空"),
