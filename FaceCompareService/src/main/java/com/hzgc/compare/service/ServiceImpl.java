@@ -25,6 +25,10 @@ public class ServiceImpl implements Service {
     private int serviceId = Config.SERVICE_ID;
     @Override
     public AllReturn<SearchResult> retrievalOnePerson(CompareParam param) {
+        if(param.getFeature() == null || param.getFeatureBit() == null){
+            log.error("The feature and bit feature can not be null");
+            return new AllReturn<>(new SearchResult());
+        }
         CompareOnePerson compareOnePerson = new CompareOnePerson();
         SearchResult searchResult = compareOnePerson.compare(param.getFeatureBit(), param.getFeature(), param.getSim());
         return new AllReturn<>(searchResult);
@@ -32,6 +36,10 @@ public class ServiceImpl implements Service {
 
     @Override
     public AllReturn<Boolean> add(UpdateParam updateParam) {
+        if(updateParam.getEsId() == null || updateParam.getIdCard() == null || updateParam.getBitFeature() == null){
+            log.error("The esId , feature and idcard can not be null");
+            return new AllReturn<>(false);
+        }
         String city = updateParam.getIdCard().substring(0, 4);
         if(city.hashCode() % serviceNum == serviceId){
             log.info("Add data " + updateParam.getEsId());
@@ -45,6 +53,10 @@ public class ServiceImpl implements Service {
 
     @Override
     public AllReturn<Boolean> delete(UpdateParam updateParam) {
+        if(updateParam.getEsId() == null || updateParam.getIdCard() == null){
+            log.error("The es id and idcard can not be null");
+            return new AllReturn<>(false);
+        }
         String city = updateParam.getIdCard().substring(0, 4);
         if(city.hashCode() % serviceNum == serviceId){
             log.info("Delete data " + updateParam.getEsId());
@@ -53,6 +65,7 @@ public class ServiceImpl implements Service {
                 writer.write(updateParam.getEsId(), 0, updateParam.getEsId().length());
                 writer.newLine();
                 writer.flush();
+                FeatureCache.getInstance().deleteFeature(updateParam.getEsId());
             } catch (IOException e) {
                 e.printStackTrace();
                 return new AllReturn<>(false);

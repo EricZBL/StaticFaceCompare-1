@@ -20,6 +20,9 @@ public class Config {
     public static String ZK_ADDRESS;
     public static String WORKER_ADDRESS;
     public static int DEAL_WITH_DELETE; //处理删除操作， 0 处理 1 不处理
+    public static int RES_FIRST_COMPARE;
+    public static int RES_SECOND_COMPARE;
+    public static int FEA_SIZE_DEFAULT;
 
     static {
         Properties prop = PropertiesUtil.getProperties();
@@ -40,6 +43,9 @@ public class Config {
         }
         WORKER_ADDRESS = getLocalIpAddress();
         DEAL_WITH_DELETE = Integer.parseInt(prop.getProperty("deal.with.delete"));
+        RES_FIRST_COMPARE = Integer.parseInt(prop.getProperty("res.first.compare"));
+        RES_SECOND_COMPARE = Integer.parseInt(prop.getProperty("res.second.compare"));
+        FEA_SIZE_DEFAULT = Integer.parseInt(prop.getProperty("fea.size.default"));
     }
 
     private static String getLocalIpAddress(){

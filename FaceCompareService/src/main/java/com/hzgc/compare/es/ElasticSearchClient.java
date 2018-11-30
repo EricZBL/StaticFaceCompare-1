@@ -1,7 +1,6 @@
 package com.hzgc.compare.es;
 
 import com.hzgc.common.Person;
-import com.hzgc.common.util.es.ElasticSearchHelper;
 import com.hzgc.compare.Config;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -92,5 +91,13 @@ public class ElasticSearchClient {
         }
         log.info("The size of response is " + res.size());
         return res;
+    }
+
+    public static void main(String[] args){
+        ElasticSearchClient.connect();
+        List<String> ids = new ArrayList<>();
+        ids.add("0481abc3-abd3-4730-92dd-60188f300126");
+        ids.add("24b0ea89-70cb-4c01-a997-fc2ca6ab633d");
+        ElasticSearchClient.readFromEs(ids);
     }
 }
