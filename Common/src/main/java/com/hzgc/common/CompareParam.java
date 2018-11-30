@@ -8,6 +8,9 @@ public class CompareParam {
     //相似度阈值
     private float sim;
 
+    public CompareParam(){
+
+    }
 
     public CompareParam(byte[] featureBit, float[] feature, float sim) {
         this.featureBit = featureBit;

@@ -2,9 +2,7 @@ package com.hzgc.compare;
 
 import com.hzgc.compare.cache.FeatureCache;
 import com.hzgc.compare.es.ElasticSearchClient;
-import com.hzgc.compare.file.FileManager;
 import lombok.extern.slf4j.Slf4j;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -36,8 +34,10 @@ public class ServiceMain {
         ElasticSearchClient.connect();
 
         log.info("Load mate data");
-        FileManager fileManager = new FileManager();
-        fileManager.loadData();
+//        FileManager fileManager = new FileManager();
+//        fileManager.loadData();
+        DealWithDelete dealWithDelete = new DealWithDelete();
+        dealWithDelete.loadData();
 
         log.info("Registry service");
         RPCRegistry rpcRegistry = new RPCRegistry(Config.SERVICE_ID, port);
@@ -58,6 +58,8 @@ public class ServiceMain {
                 System.exit(1);
             }
         }
+//        new Timer().schedule(new TimeToDelete(), 0, 24 * 60 * 60 * 1000);
+        log.info("Service start success.");
     }
 
     private static String getPort(){

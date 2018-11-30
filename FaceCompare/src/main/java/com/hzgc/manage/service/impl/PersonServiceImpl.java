@@ -1,6 +1,8 @@
 package com.hzgc.manage.service.impl;
 
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.IdcardUtil;
 import com.hzgc.exception.HzgcException;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -40,7 +43,7 @@ public class PersonServiceImpl implements PersonService {
     @Autowired
     private LogService logService;
 
-    private CompareClient compareClient;
+    private Client client;
 
 
     @Override

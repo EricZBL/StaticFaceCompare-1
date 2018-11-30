@@ -21,11 +21,11 @@ public class FaceUtil {
         SAVE_INDEX_MAX = saveIndexMax;
     }
 
-    public static ArrayList<CompareResult> faceCompareBitOne(byte[][] featureList, byte[][] queryList, int topN){
+    public static ArrayList<CompareResult> faceCompareBitOne(byte[][] featureList, int featureNum, byte[][] queryList, int topN){
         ArrayList<CompareResult> res = new ArrayList<>();
         for(int i = 0; i < queryList.length ; i ++){
             FaceCompareUtil faceCompareUtil = new FaceCompareUtil(HANMING_THRESHOLD, SAVE_INDEX_MAX);
-            CompareResult compareResult = faceCompareUtil.faceCompareBitOne(i + "", featureList, queryList[i], topN);
+            CompareResult compareResult = faceCompareUtil.faceCompareBitOne(i + "", featureList, featureNum, queryList[i], topN);
             res.add(compareResult);
         }
         return res;
