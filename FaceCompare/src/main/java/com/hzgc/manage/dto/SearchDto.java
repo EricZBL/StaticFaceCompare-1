@@ -26,13 +26,13 @@ public class SearchDto implements Serializable {
     private String searchId;
 
     @ApiModelProperty(value = "特征值", name = "tzz", example = "")
-    private String tzz;
+    private float[] tzz;
 
     /**
      * 身份证（sfz）
      */
-//    @ApiModelProperty(value = "bit特征值", name = "bittzz", example = "")
-    private String bittzz;
+    @ApiModelProperty(value = "bit特征值", name = "bittzz", example = "")
+    private byte[] bittzz;
 
     /**
      * 当前页

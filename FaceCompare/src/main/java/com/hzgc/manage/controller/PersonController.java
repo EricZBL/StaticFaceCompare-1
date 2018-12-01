@@ -17,6 +17,7 @@ import com.hzgc.utils.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 @RestController
 @Api(value = "/person", tags = "人口库服务")
 @RequestMapping("/person")
+@Slf4j
 public class PersonController {
 
     private static String PERSON_CONTROLLER_CLASS_NAME = "com.hzgc.manage.controller.PersonController";

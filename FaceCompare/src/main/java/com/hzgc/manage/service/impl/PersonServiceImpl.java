@@ -33,9 +33,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -250,10 +247,13 @@ public class PersonServiceImpl implements PersonService {
             singleSearchResult.setPersonVOS(personVOList);
             return singleSearchResult;
         }
-        CompareParam compareParam = new CompareParam(FaceUtil.base64Str2BitFeature(searchDto.getBittzz()), FaceUtil.base64Str2floatFeature(searchDto.getTzz()), 80);
+        log.info("searchDTO");
+        CompareParam compareParam = new CompareParam(searchDto.getBittzz(), searchDto.getTzz(), 80);
         SearchResult compareresult = client.compare(compareParam);
         SearchResult.Record[] records = compareresult.getRecords();
         SingleSearchResult singleSearchResult = new SingleSearchResult();
+
+        log.info("searchDTO" + singleSearchResult);
         List<PersonVO> personVOS = new ArrayList<>();
         for (SearchResult.Record record : records) {
             Person person = (Person) record.getValue();
@@ -266,6 +266,9 @@ public class PersonServiceImpl implements PersonService {
         singleSearchResult.setPersonVOS(personVOS);
         singleSearchResult.setSearchId(IdUtil.simpleUUID());
         singleSearchResult.setTotal(records.length);
+
+        log.info("personVOS" + personVOS);
+
 
         memoryDao.insertSearchRes(singleSearchResult);
         if (records.length > size) {

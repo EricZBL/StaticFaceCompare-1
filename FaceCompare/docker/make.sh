@@ -3,7 +3,7 @@
 cd `dirname $0`
 HOME_DIR=`pwd`
 VERSION_INFO=${1}
-IMAGE_NAME=FaceCompare
+IMAGE_NAME=compare
 DOCKER_REPO=${2}
 DATE_YMD=`date +%Y-%m-%d`
 DATE_HMS=`date +%H:%m:%S`

@@ -35,7 +35,7 @@ services:
     - ${DOCKER_HOME}/zookeeper/datalog:/datalog
 
   facecompare:
-    image: ${DOCKER_REPOSITOR}/hzgc/facecompare:${VERSION}
+    image: ${DOCKER_REPOSITOR}/hzgc/compare:${VERSION}
     depends_on:
     - zookeeper
     - esearch
@@ -45,13 +45,16 @@ services:
     - ZOOKEEPER_HOST=${ZK_HOST}:${ZK_PORT}
     - ES_HOST=${ES_HOST}
     - TZ=Asia/Shanghai
+    - LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/GsFaceLib/face_libs
     network_mode: "host"
     extra_hosts:
     - platform:${PLATFORM_HOST}
     volumes:
+    - /opt/GsFaceLib:/opt/GsFaceLib
     - ${DOCKER_HOME}/facecompare/log:/log
     - /usr/lib64/ld-linux-x86-64.so.2:/lib/ld-linux-x86-64.so.2
     - /etc/localtime:/etc/localtime:ro
+
 
   compareservice-0:
     image: ${DOCKER_REPOSITOR}/hzgc/compare-static:${VERSION}
