@@ -83,6 +83,7 @@ public class UserServiceImplTest {
     public void save() {
 //        userRepository.deleteById("6cad4c8f-ea58-4848-b5d1-4165c3b2c39b");
         Pageable pageable = PageRequest.of(0, 10);
+        Page<Person> all = personRepository.findAll(pageable);
         Page<Person> list = personRepository.findByXmLike("*红*", pageable);
         Page<Person> bySfzLike = personRepository.findBySfzLike("*194112*", pageable);
         System.out.println(list);

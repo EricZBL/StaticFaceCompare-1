@@ -6,6 +6,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.IdcardUtil;
 import com.hzgc.common.CompareParam;
 import com.hzgc.common.SearchResult;
+import com.hzgc.config.HzgcConfig;
 import com.hzgc.exception.HzgcException;
 import com.hzgc.jniface.*;
 import com.hzgc.manage.dao.MemoryDao;
@@ -43,6 +44,9 @@ import java.util.List;
 @Service
 @Slf4j
 public class PersonServiceImpl implements PersonService {
+
+    @Autowired
+    private HzgcConfig hzgcConfig;
 
     @Autowired
     private PersonRepository personRepository;
@@ -107,7 +111,7 @@ public class PersonServiceImpl implements PersonService {
         String town = personDto.getSfz().substring(4, 6);
         Short year = IdcardUtil.getYearByIdCard(personDto.getSfz());
         String month = personDto.getSfz().substring(10, 12);
-        String path = "/srv/testdata/" + province + "/" + city + "/" + town + "/" + year + "/" + month + "/" + personDto.getSfz() + "/" + person.getId() + ".jpeg";
+        String path = hzgcConfig.getDir()+"/" + province + "/" + city + "/" + town + "/" + year + "/" + month + "/" + personDto.getSfz() + "/" + person.getId() + ".jpeg";
 //        String path = "D:\\" + province + "\\" + city + "\\" + town + "\\" + year + "\\" + month + "\\" + personDto.getSfz() + "\\" + person.getId() + ".jpeg";
         String tp = personDto.getTp();
 
@@ -153,7 +157,7 @@ public class PersonServiceImpl implements PersonService {
         String town = personDto.getSfz().substring(4, 6);
         Short year = IdcardUtil.getYearByIdCard(personDto.getSfz());
         String month = personDto.getSfz().substring(10, 12);
-        String path = "/srv/testdata/" + province + "/" + city + "/" + town + "/" + year + "/" + month + "/" + personDto.getSfz() + "/" + person.getId() + ".jpeg";
+        String path = hzgcConfig.getDir()+"/" + province + "/" + city + "/" + town + "/" + year + "/" + month + "/" + personDto.getSfz() + "/" + person.getId() + ".jpeg";
 //        String path = "D:\\" + province + "\\" + city + "\\" + town + "\\" + year + "\\" + month + "\\" + personDto.getSfz() + "\\" + person.getId() + ".jpeg";
         String tp = personDto.getTp();
         if (StringUtils.isNotBlank(tp) && StringUtils.isNotBlank(path)) {
@@ -248,7 +252,8 @@ public class PersonServiceImpl implements PersonService {
             return singleSearchResult;
         }
         log.info("searchDTO");
-        CompareParam compareParam = new CompareParam(searchDto.getBittzz(), searchDto.getTzz(), 80);
+        log.info("sim::"+hzgcConfig.getSim());
+        CompareParam compareParam = new CompareParam(searchDto.getBittzz(), searchDto.getTzz(), hzgcConfig.getSim());
         SearchResult compareresult = client.compare(compareParam);
         SearchResult.Record[] records = compareresult.getRecords();
         SingleSearchResult singleSearchResult = new SingleSearchResult();

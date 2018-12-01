@@ -11,3 +11,8 @@ zk:
   address: 172.18.18.202:2181
 logging:
   config: classpath:logback-boot.xml
+
+hzgc:
+  person:
+    dir: /persondir
+    sim: 80

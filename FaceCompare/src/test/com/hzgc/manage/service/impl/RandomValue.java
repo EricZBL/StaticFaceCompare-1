@@ -123,7 +123,7 @@ public class  RandomValue {
         return id;
     }
     public static final String getSr(){
-        SimpleDateFormat dft = new SimpleDateFormat("yyyy年MM月dd日");
+        SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd");
         Date beginDate = new Date();
         Calendar date = Calendar.getInstance();
         date.setTime(beginDate);
