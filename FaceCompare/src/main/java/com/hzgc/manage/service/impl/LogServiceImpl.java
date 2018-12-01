@@ -8,6 +8,7 @@ import com.hzgc.manage.dto.PersonQueryDto;
 import com.hzgc.manage.entity.Log;
 import com.hzgc.manage.entity.User;
 import com.hzgc.manage.service.LogService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,7 @@ import static org.springframework.data.elasticsearch.annotations.DateFormat.date
  * created by liang on 18-11-16
  */
 @Service
+@Slf4j
 public class LogServiceImpl implements LogService {
 
     @Autowired
