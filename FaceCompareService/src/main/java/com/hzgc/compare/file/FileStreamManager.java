@@ -19,15 +19,14 @@ public class FileStreamManager {
     private List<BufferedReader> Readers;
     private Map<String, BufferedWriter> cityToWriter;
     private List<String> filePaths;
-    private BufferedWriter editWriter;
-    private String eaditLogPath;
+//    private String eaditLogPath;
 
     private FileStreamManager(){
         Readers = new ArrayList<>();
         cityToWriter = new HashMap<>();
         filePaths = new ArrayList<>();
         path = Config.FILE_PATH;
-        eaditLogPath = path + File.separator + Config.EADIT_LOG;
+//        eaditLogPath = path + File.separator + Config.EADIT_LOG;
         init();
     }
 
@@ -45,16 +44,16 @@ public class FileStreamManager {
             System.exit(1);
         }
 
-        File editLog = new File(eaditLogPath);
-        if(!editLog.isFile()){
-            log.info("Edit log is not exit, create it.");
-            try {
-                editLog.createNewFile();
-                editWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(editLog, true)));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+//        File editLog = new File(eaditLogPath);
+//        if(!editLog.isFile()){
+//            log.info("Edit log is not exit, create it.");
+//            try {
+//                editLog.createNewFile();
+//                editWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(editLog, true)));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
         for(String fileName : fileNames){
             if(!fileName.endsWith("txt")){
@@ -127,10 +126,6 @@ public class FileStreamManager {
             cityToWriter.put(city, writer);
         }
         return writer;
-    }
-
-    public BufferedWriter getEditWriter() {
-        return editWriter;
     }
 
     public List<String> getFilePathes() {
