@@ -45,24 +45,28 @@ public class LogServiceImpl implements LogService {
     @Override
     public Page<Log> findPage(LogQueryDto logQueryDto, Pageable pageable) {
 
+        if (StringUtils.isNotBlank(logQueryDto.getUsername()) || logQueryDto.getCreatetime() != null) {
 
-        if(StringUtils.isNotBlank(logQueryDto.getUsername()) || logQueryDto.getCreatetime() != null){
-
-            if(StringUtils.isNotBlank(logQueryDto.getUsername()) && logQueryDto.getCreatetime() != null){
+            if (StringUtils.isNotBlank(logQueryDto.getUsername()) && logQueryDto.getCreatetime() != null) {
 
                 Date createtime = logQueryDto.getCreatetime();
                 String starttime = DateUtil.format(DateUtil.beginOfDay(createtime), "yyyy-MM-dd HH:mm:ss");
                 String endtime = DateUtil.format(DateUtil.endOfDay(createtime), "yyyy-MM-dd HH:mm:ss");
-                return logRepository.findByUsernameLikeAndCreatetimeBetween(logQueryDto.getUsername(), starttime, endtime, pageable);
+                return logRepository.findByUsernameLikeAndCreatetimeBetween("*"+logQueryDto.getUsername()+"*", starttime, endtime, pageable);
 
+            } else {
+                if (StringUtils.isNotBlank(logQueryDto.getUsername())) {
+                    return logRepository.findByUsernameLike("*"+logQueryDto.getUsername()+"*", pageable);
                 }else {
-                Date createtime = logQueryDto.getCreatetime();
-                String starttime = DateUtil.format(DateUtil.beginOfDay(createtime), "yyyy-MM-dd HH:mm:ss");
-                String endtime = DateUtil.format(DateUtil.endOfDay(createtime), "yyyy-MM-dd HH:mm:ss");
-                return logRepository.findByUsernameLikeOrCreatetimeBetween(logQueryDto.getUsername(), starttime, endtime, pageable);
+                    Date createtime = logQueryDto.getCreatetime();
+                    String starttime = DateUtil.format(DateUtil.beginOfDay(createtime), "yyyy-MM-dd HH:mm:ss");
+                    String endtime = DateUtil.format(DateUtil.endOfDay(createtime), "yyyy-MM-dd HH:mm:ss");
+                    return logRepository.findByCreatetimeBetween(starttime, endtime, pageable);
+                }
+
             }
         }
-        return  logRepository.findAll(pageable);
+        return logRepository.findAll(pageable);
     }
 
     @Override

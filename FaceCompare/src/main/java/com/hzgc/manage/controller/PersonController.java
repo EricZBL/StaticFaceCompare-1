@@ -79,7 +79,7 @@ public class PersonController {
     @ApiOperation(value = "修改人口")
     @RequestMapping(value = "update", method = RequestMethod.POST)
     public ResultVO<String> update(@RequestBody @Valid PersonDto personDto) {
-        Log log = new Log(personDto.getUserId(), AnnUtils.getApiValue(PERSON_CONTROLLER_CLASS_NAME, "insert"));
+        Log log = new Log(personDto.getUserId(), AnnUtils.getApiValue(PERSON_CONTROLLER_CLASS_NAME, "update"));
         personService.update(personDto, log);
         return ResultUtils.success();
     }
@@ -96,7 +96,7 @@ public class PersonController {
     @RequestMapping(value = "/extract_picture", method = RequestMethod.POST)
     public ResultVO<BigPictureData> faceFeatureExtract(@RequestParam("image") @ApiParam(name = "image", value = "图片") MultipartFile image,
                                                        @RequestParam("userId") @ApiParam(name="userId",value="登录账号id",required=true) String userId) {
-        Log log = new Log(userId, AnnUtils.getApiValue(PERSON_CONTROLLER_CLASS_NAME, "delete"));
+        Log log = new Log(userId, AnnUtils.getApiValue(PERSON_CONTROLLER_CLASS_NAME, "faceFeatureExtract"));
         BigPictureData bigPictureData = personService.featureExtractByImage(image, log);
         if (null == bigPictureData) {
             return null;
@@ -109,7 +109,7 @@ public class PersonController {
     public ResultVO<SearchResult> searchPicture(
             @RequestBody @Valid SearchDto searchDto) {
 
-        Log log = new Log(searchDto.getUserId(), AnnUtils.getApiValue(PERSON_CONTROLLER_CLASS_NAME, "delete"));
+        Log log = new Log(searchDto.getUserId(), AnnUtils.getApiValue(PERSON_CONTROLLER_CLASS_NAME, "searchPicture"));
 
         SingleSearchResult singleSearchResult = personService.search_picture(searchDto);
 

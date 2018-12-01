@@ -211,11 +211,8 @@ public class PersonServiceImpl implements PersonService {
         String imageType = null;
         BigPictureData bigPictureData = new BigPictureData();
         ArrayList<PictureData> smallPictures = new ArrayList<>();
-        log.info("start extract");
         ArrayList<SmallImage> smallImages = FaceFunction.faceCheck(imageBytes, PictureFormat.JPG, PictureFormat.LEVEL_WIDTH_3);
-        log.info("stop extract");
         if (null != smallImages && smallImages.size() > 0) {
-            log.info("smallImage's size:::"+smallImages.size());
             for (SmallImage smallImage : smallImages) {
                 PictureData pictureData = new PictureData();
                 pictureData.setImageData(smallImage.getPictureStream());
@@ -224,7 +221,6 @@ public class PersonServiceImpl implements PersonService {
                 pictureData.setImage_coordinate(smallImage.getFaceAttribute().getImage_coordinate());
                 imageType = smallImage.getImageType();
                 smallPictures.add(pictureData);
-                log.info("pictureStream:::" + smallImage.getPictureStream());
             }
             bigPictureData.setImageType(imageType);
             bigPictureData.setSmallImages(smallPictures);
@@ -232,13 +228,11 @@ public class PersonServiceImpl implements PersonService {
             bigPictureData.setImageID(IdUtil.simpleUUID());
             bigPictureData.setImageData(imageBytes);
             //写日志
-            log.info("start insert log");
+            logs.setPersonpic(Base64Utils.getImageStr(imageBytes));
             this.insertLog(logs);
-            log.info("end insert log");
 
             return bigPictureData;
         }
-        log.info("return null");
         return null;
     }
 
