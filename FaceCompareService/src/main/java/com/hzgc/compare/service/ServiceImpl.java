@@ -15,8 +15,7 @@ import com.hzgc.compare.file.FileStreamManager;
 import com.hzgc.jniface.FaceUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 
 @Slf4j
 @RpcService(com.hzgc.common.Service.class)
@@ -60,11 +59,16 @@ public class ServiceImpl implements Service {
         String city = updateParam.getIdCard().substring(0, 4);
         if(city.hashCode() % serviceNum == serviceId){
             log.info("Delete data " + updateParam.getEsId());
-            BufferedWriter writer = FileStreamManager.getInstanse().getEditWriter();
+            String path = Config.FILE_PATH  + File.separator + ".log";
+            File logFile = new File(path);
             try {
+                if(!logFile.exists() || !logFile.isFile()){
+                    logFile.createNewFile();
+                }
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(logFile, true)));
                 writer.write(updateParam.getEsId(), 0, updateParam.getEsId().length());
                 writer.newLine();
-                writer.flush();
+                writer.close();
                 FeatureCache.getInstance().deleteFeature(updateParam.getEsId());
             } catch (IOException e) {
                 e.printStackTrace();

@@ -14,7 +14,6 @@ import java.util.List;
 @Slf4j
 public class DealWithDelete {
     private String path = Config.FILE_PATH;
-    private String eaditLogPath = path + File.separator + Config.EADIT_LOG;
     private List<String> edits = new ArrayList<>();
     private List<List<Pair<String, byte[]>>> list = new ArrayList<>();
     private ProcessBuilder builder = new ProcessBuilder();
@@ -43,19 +42,33 @@ public class DealWithDelete {
 
     private void readEdits(){
         log.info("Load edit log");
-        File eaditLog = new File(eaditLogPath);
-        if(!eaditLog.isFile()){
+        List<String> filePathes = FileStreamManager.getInstanse().getFilePathes();
+        if(filePathes.size() == 0){
             return;
         }
-        try {
-            BufferedReader logReader = new BufferedReader(new InputStreamReader(new FileInputStream(eaditLogPath)));
-            String line;
-            while ((line = logReader.readLine()) != null){
-                edits.add(line);
+        List<File> editLogs = new ArrayList<>();
+        for(String filePath : filePathes){
+            String logPath = filePath.split("\\.")[0] + ".log";
+            File editLog = new File(logPath);
+            if(!editLog.exists() || !editLog.isFile()){
+                continue;
             }
-            logReader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+            log.info("Load edit log file " + logPath);
+            editLogs.add(editLog);
+            try {
+                BufferedReader logReader = new BufferedReader(new InputStreamReader(new FileInputStream(editLog)));
+                String line;
+                while ((line = logReader.readLine()) != null){
+                    edits.add(line);
+                }
+                logReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        for(File file : editLogs){
+            log.info("Remove edit log file " + file.getAbsolutePath());
+            file.deleteOnExit();
         }
     }
 
@@ -114,11 +127,15 @@ public class DealWithDelete {
     }
 
     private void dealWithFile(List<String> filePaths){
-        log.info("Delete file old, move new file to old");
         for(String filePath : filePaths){
-            builder.command("rm", "-f", filePath);
-            builder.command("mv", filePath + "bac", filePath);
-            log.info("Command : rm -f " + filePath + "; mv " + filePath + "bac " + filePath);
+            log.info("Rename file " + filePath);
+            File file = new File(filePath + "bac");
+            File newFile = new File(filePath);
+            file.renameTo(newFile);
+//            String fileAbsolutePath = file.getAbsolutePath();
+//            builder.command("rm", "-f", fileAbsolutePath);
+//            builder.command("mv", fileAbsolutePath + "bac", fileAbsolutePath);
+//            log.info("Command : rm -f " + fileAbsolutePath + "; mv " + fileAbsolutePath + "bac " + fileAbsolutePath);
         }
     }
 }
