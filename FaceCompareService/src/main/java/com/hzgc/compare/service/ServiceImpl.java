@@ -59,7 +59,7 @@ public class ServiceImpl implements Service {
         String city = updateParam.getIdCard().substring(0, 4);
         if(city.hashCode() % serviceNum == serviceId){
             log.info("Delete data " + updateParam.getEsId());
-            String path = Config.FILE_PATH  + File.separator + ".log";
+            String path = Config.FILE_PATH  + File.separator + city + ".log";
             File logFile = new File(path);
             try {
                 if(!logFile.exists() || !logFile.isFile()){

@@ -28,19 +28,22 @@ public class FileReader implements Runnable{
     public void run() {
         long count = 0L;
         for(BufferedReader reader : list){
-            List<Pair<String, byte[]>> data = new ArrayList<>();
             try {
+                List<Pair<String, byte[]>> data = new ArrayList<>();
                 String line;
                 while ((line = reader.readLine()) != null){
                     String[] s = line.split("_");
+                    if(s.length != 2){
+                        continue;
+                    }
                     data.add(new Pair<>(s[0], FaceUtil.base64Str2BitFeature(s[1])));
                     count ++;
                 }
-            }catch (IOException e){
+                featureCache.addFeatures(data);
+            }catch (Exception e){
                 e.printStackTrace();
                 log.error(e.getMessage());
             }
-            featureCache.addFeatures(data);
         }
         log.info("The num of Records Loaded is : " + count);
         end = true;

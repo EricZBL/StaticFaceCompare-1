@@ -24,9 +24,9 @@ public class ElasticSearchClient {
     }
 
     public static List<Person> readFromEs(List<String> ids){
-        SearchRequestBuilder requestBuilder = esClient.prepareSearch("manageperson")
-                .setTypes("Person");
-        requestBuilder.setSize(500);
+        SearchRequestBuilder requestBuilder = esClient.prepareSearch(Config.ES_INDEX)
+                .setTypes(Config.ES_TYPE);
+        requestBuilder.setSize(Config.RES_FIRST_COMPARE);
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         TermsQueryBuilder queryBuilder = QueryBuilders.termsQuery("_id", ids.toArray(new String[ids.size()]));
         boolQueryBuilder.must(queryBuilder);

@@ -23,6 +23,8 @@ public class Config {
     public static int RES_FIRST_COMPARE;
     public static int RES_SECOND_COMPARE;
     public static int FEA_SIZE_DEFAULT;
+    public static String ES_INDEX;
+    public static String ES_TYPE;
 
     static {
         Properties prop = PropertiesUtil.getProperties();
@@ -46,6 +48,8 @@ public class Config {
         RES_FIRST_COMPARE = Integer.parseInt(prop.getProperty("res.first.compare"));
         RES_SECOND_COMPARE = Integer.parseInt(prop.getProperty("res.second.compare"));
         FEA_SIZE_DEFAULT = Integer.parseInt(prop.getProperty("fea.size.default"));
+        ES_INDEX = prop.getProperty("es.index");
+        ES_TYPE = prop.getProperty("es.type");
     }
 
     private static String getLocalIpAddress(){

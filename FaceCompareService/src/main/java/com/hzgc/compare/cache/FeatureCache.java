@@ -62,6 +62,7 @@ public class FeatureCache {
             featureArr[featureSize] = feature;
             esIdArr[featureSize] = id;
             featureSize ++;
+            log.info("The size of cache is " + featureSize);
             return true;
         }finally {
             writeLock.unlock();
@@ -99,6 +100,7 @@ public class FeatureCache {
             esIdArr = newIdsArr;
             featureArr = newFeatureArr;
             log.info("The time use to delete from memory cache by id is " + (System.currentTimeMillis() - start));
+            log.info("The size of cache is " + featureSize);
             return true;
         }finally {
             writeLock.unlock();
@@ -121,6 +123,7 @@ public class FeatureCache {
                 esIdArr[featureSize] = feature.getKey();
                 featureSize ++;
             }
+            log.info("The size of cache is " + featureSize);
             return true;
         }finally {
             writeLock.unlock();
@@ -154,6 +157,7 @@ public class FeatureCache {
             this.featureArr = featureArr;
             this.esIdArr = esIdArr;
             this.featureSize = featureArr.length;
+            log.info("The size of cache is " + featureSize);
         }finally {
             writeLock.unlock();
         }

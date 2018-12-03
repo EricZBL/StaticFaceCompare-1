@@ -68,7 +68,10 @@ public class DealWithDelete {
         }
         for(File file : editLogs){
             log.info("Remove edit log file " + file.getAbsolutePath());
-            file.deleteOnExit();
+            boolean res = file.delete();
+            if(!res){
+                log.error("Delete file " + file.getAbsolutePath() + " faild");
+            }
         }
     }
 
@@ -82,6 +85,9 @@ public class DealWithDelete {
                 String line2;
                 while ((line2 = fileReader.readLine()) != null){
                     String[] s = line2.split("_");
+                    if(s.length != 2){
+                        continue;
+                    }
                     if(!edits.contains(s[0])) {
                         datas.add(new Pair<>(s[0], FaceUtil.base64Str2BitFeature(s[1])));
                     }
