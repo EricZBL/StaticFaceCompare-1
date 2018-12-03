@@ -238,4 +238,27 @@ public class Person implements Serializable {
     public void setBittzz(String bittzz) {
         this.bittzz = bittzz;
     }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "id='" + id + '\'' +
+                ", sfz='" + sfz + '\'' +
+                ", xm='" + xm + '\'' +
+                ", xb='" + xb + '\'' +
+                ", mz='" + mz + '\'' +
+                ", sr='" + sr + '\'' +
+                ", ssssqx='" + ssssqx + '\'' +
+                ", jd='" + jd + '\'' +
+                ", mp='" + mp + '\'' +
+                ", mlxz='" + mlxz + '\'' +
+                ", csd='" + csd + '\'' +
+                ", cym='" + cym + '\'' +
+                ", jg='" + jg + '\'' +
+                ", tp='" + tp + '\'' +
+                ", tpbase='" + tpbase + '\'' +
+                ", tzz='" + tzz + '\'' +
+                ", bittzz='" + bittzz + '\'' +
+                '}';
+    }
 }

@@ -241,8 +241,11 @@ public class PersonServiceImpl implements PersonService {
     public SingleSearchResult search_picture(SearchDto searchDto) {
         Integer page = searchDto.getPage();
         Integer size = searchDto.getSize();
+        log.info("PageSize : " + page + " Size : " + size);
         if (searchDto.getSearchId() != null) {
+            log.info("Search Id : " + searchDto.getSearchId());
             SingleSearchResult singleSearchResult = memoryDao.getSearchRes(searchDto.getSearchId());
+            log.info("totle : " + singleSearchResult.getTotal());
             List<PersonVO> list = singleSearchResult.getPersonVOS();
             List<PersonVO> personVOList = new ArrayList<>();
             for (int i = size * (page - 1); i < size * page; i++) {
@@ -254,25 +257,32 @@ public class PersonServiceImpl implements PersonService {
         log.info("searchDTO");
         log.info("sim::"+hzgcConfig.getSim());
         CompareParam compareParam = new CompareParam(searchDto.getBittzz(), searchDto.getTzz(), hzgcConfig.getSim());
+        log.info("end compare");
         SearchResult compareresult = client.compare(compareParam);
         SearchResult.Record[] records = compareresult.getRecords();
+        log.info("Length : " + records.length);
         SingleSearchResult singleSearchResult = new SingleSearchResult();
 
-        log.info("searchDTO" + singleSearchResult);
         List<PersonVO> personVOS = new ArrayList<>();
         for (SearchResult.Record record : records) {
-            Person person = (Person) record.getValue();
-            PersonVO personVO = new PersonVO();
-            BeanUtil.copyProperties(person, personVO);
-            personVO.setSim(record.getKey());
-            personVO.setTpbase(Base64Utils.getImageStr(person.getTp()));
-            personVOS.add(personVO);
+            try {
+                com.hzgc.common.Person person = (com.hzgc.common.Person) record.getValue();
+                PersonVO personVO = new PersonVO();
+                BeanUtil.copyProperties(person, personVO);
+                personVO.setSim(record.getKey());
+                personVO.setTpbase(Base64Utils.getImageStr(person.getTp()));
+                personVOS.add(personVO);
+            }catch (Exception e){
+                log.info("Value " + record.getValue().toString());
+                log.info("Key " + record.getKey());
+            }
+
         }
         singleSearchResult.setPersonVOS(personVOS);
         singleSearchResult.setSearchId(IdUtil.simpleUUID());
         singleSearchResult.setTotal(records.length);
 
-        log.info("personVOS" + personVOS);
+        log.info("personVOS::" + personVOS);
 
 
         memoryDao.insertSearchRes(singleSearchResult);

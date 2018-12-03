@@ -19,6 +19,7 @@ public class MemoryDao {
     public boolean insertSearchRes(SingleSearchResult singleSearchResult) {
         try {
             lock.lock();
+            log.info("Insert " + singleSearchResult.getSearchId());
             if(searchCollectionMap.size() > 100){
                 removeLastResult();
                 searchCollectionMap.put(singleSearchResult.getSearchId(), singleSearchResult);

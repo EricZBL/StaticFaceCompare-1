@@ -4,11 +4,11 @@ spring:
   data:
     elasticsearch:
       cluster-name: docker-cluster
-      cluster-nodes: 172.18.18.138:9300
+      cluster-nodes: ${elasticsearch.host}
       repositories:
         enabled: true
 zk:
-  address: 172.18.18.202:2181
+  address: ${zk.address}
 logging:
   config: classpath:logback-boot.xml
 

@@ -2,5 +2,5 @@
 #/bin/bash
 
 exec java -jar app.jar \
---elasticseatch.host=${es.host} \
---zk.address=${zk.host}
+--elasticsearch.host=${ES_HOST} \
+--zk.address=${ZOOKEEPER_HOST} >> /srv/test.log
