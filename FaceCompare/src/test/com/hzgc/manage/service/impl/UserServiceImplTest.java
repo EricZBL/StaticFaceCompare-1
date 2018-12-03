@@ -1,4 +1,6 @@
 package com.hzgc.manage.service.impl;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.IdUtil;
 import com.hzgc.manage.dao.*;
 import com.hzgc.manage.entity.Person;
 import org.junit.Test;
@@ -12,6 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @SpringBootTest
@@ -22,6 +25,9 @@ public class UserServiceImplTest {
     private PersonRepository personRepository;
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private Client client;
 
     @Test
     public void insert() throws IOException {
@@ -87,5 +93,25 @@ public class UserServiceImplTest {
         Page<Person> list = personRepository.findByXmLike("*红*", pageable);
         Page<Person> bySfzLike = personRepository.findBySfzLike("*194112*", pageable);
         System.out.println(list);
+    }
+
+    @Test
+    public void chongfu(){
+
+//        08814b738cea4e78bf9f46ed429db6d2
+
+       Person byId = personRepository.findById("08814b738cea4e78bf9f46ed429db6d2").get();
+
+
+       for(int i=0; i< 100; i++){
+           Person person = new Person();
+           BeanUtil.copyProperties(byId, person);
+           person.setId(IdUtil.simpleUUID());
+           person.setXm(RandomValue.getChineseName());
+           personRepository.save(person);
+           client.addData(person.getId(),person.getBittzz(),person.getSfz());
+
+       }
+
     }
 }

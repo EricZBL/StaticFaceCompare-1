@@ -39,6 +39,7 @@ public class MemoryDao {
             lock.lock();
             if (searchCollectionMap.containsKey(searchId)) {
                 log.info("Get search result successfull, search id is:{}", searchId);
+                log.info("total is :"+searchCollectionMap.get(searchId).getTotal()+", Person ::" +searchCollectionMap.get(searchId).getPersonVOS().get(0).toString());
                 return searchCollectionMap.get(searchId);
             } else {
                 log.warn("Search result is not exists, search id is:{}", searchId);

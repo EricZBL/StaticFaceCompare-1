@@ -9,8 +9,6 @@ spring:
         enabled: true
 zk:
   address: ${zk.address}
-logging:
-  config: classpath:logback-boot.xml
 
 hzgc:
   person:

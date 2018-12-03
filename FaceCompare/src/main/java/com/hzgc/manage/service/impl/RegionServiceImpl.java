@@ -6,6 +6,7 @@ import com.hzgc.manage.dao.ProvincesRepository;
 import com.hzgc.manage.entity.Areas;
 import com.hzgc.manage.entity.Cities;
 import com.hzgc.manage.entity.Provinces;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.util.List;
  * created by liang on 18-11-16
  */
 @Service
+@Slf4j
 public class RegionServiceImpl implements com.hzgc.manage.service.RegionService {
 
     @Autowired

@@ -3,7 +3,7 @@ version: '2.3'
 services:
 
   esearch:
-    image: ${DOCKER_REPOSITOR}/hzgc/elasticsearch-ik:5.5.0
+    image: ${DOCKER_REPOSITOR}/hzgc/elasticsearch:6.5.1
     container_name: esearch
     restart: always
     environment:
@@ -34,13 +34,14 @@ services:
     - ${DOCKER_HOME}/zookeeper/data:/data
     - ${DOCKER_HOME}/zookeeper/datalog:/datalog
 
-  facecompare:
+  compare:
     image: ${DOCKER_REPOSITOR}/hzgc/compare:${VERSION}
     depends_on:
     - zookeeper
     - esearch
     container_name: compare
     restart: always
+    runtime: nvidia
     environment:
     - ZOOKEEPER_HOST=${ZK_HOST}:${ZK_PORT}
     - ES_HOST=${ES_HOST}:${ES_PORT}

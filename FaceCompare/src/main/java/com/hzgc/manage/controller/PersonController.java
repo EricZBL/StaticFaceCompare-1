@@ -52,10 +52,11 @@ public class PersonController {
 
     @ApiOperation(value = "人口分页列表")
     @RequestMapping(value = "pageList", method = RequestMethod.POST)
-    public ResultVO<PageUtils> pageList(@RequestBody @Valid PersonQueryDto personQueryDto){
+    public ResultVO<PageUtils> pageList(@RequestBody @Valid PersonQueryDto personQueryDto) {
 
+        log.info("start search person by xm,sfz");
         Log log = new Log(personQueryDto.getUserId(), AnnUtils.getApiValue(PERSON_CONTROLLER_CLASS_NAME, "pageList"));
-        Pageable pageable = PageRequest.of(personQueryDto.getPage()-1, personQueryDto.getSize());
+        Pageable pageable = PageRequest.of(personQueryDto.getPage() - 1, personQueryDto.getSize());
         PageUtils<Person> page = personService.findPageByXmSfz(personQueryDto, pageable, log);
         return ResultUtils.success(page);
     }
@@ -63,6 +64,7 @@ public class PersonController {
     @ApiOperation(value = "新增人口")
     @RequestMapping(value = "save", method = RequestMethod.POST)
     public ResultVO<String> insert(@RequestBody @Valid PersonDto personDto) {
+        log.info("start insert new person");
         Log log = new Log(personDto.getUserId(), AnnUtils.getApiValue(PERSON_CONTROLLER_CLASS_NAME, "insert"));
         personService.insert(personDto, log);
         return ResultUtils.success();
@@ -70,8 +72,9 @@ public class PersonController {
 
     @ApiOperation(value = "查询人口详情")
     @RequestMapping(value = "info", method = RequestMethod.GET)
-    public ResultVO<Person> info(@RequestParam("userid") @ApiParam(name="userid",value="登录账号id",required=true) String userid,
-                                 @RequestParam("id") @ApiParam(name="id",value="人口id",required=true) String id) {
+    public ResultVO<Person> info(@RequestParam("userid") @ApiParam(name = "userid", value = "登录账号id", required = true) String userid,
+                                 @RequestParam("id") @ApiParam(name = "id", value = "人口id", required = true) String id) {
+        log.info("start query person info");
         Log log = new Log(userid, AnnUtils.getApiValue(PERSON_CONTROLLER_CLASS_NAME, "info"));
         Person person = personService.findById(id, log);
         return ResultUtils.success(person);
@@ -81,6 +84,7 @@ public class PersonController {
     @ApiOperation(value = "修改人口")
     @RequestMapping(value = "update", method = RequestMethod.POST)
     public ResultVO<String> update(@RequestBody @Valid PersonDto personDto) {
+        log.info("start update person info");
         Log log = new Log(personDto.getUserId(), AnnUtils.getApiValue(PERSON_CONTROLLER_CLASS_NAME, "update"));
         personService.update(personDto, log);
         return ResultUtils.success();
@@ -89,6 +93,7 @@ public class PersonController {
     @ApiOperation(value = "删除人口")
     @RequestMapping(value = "delete", method = RequestMethod.DELETE)
     public ResultVO<String> delete(@RequestBody @Valid UserDto userDto) {
+        log.info("start delete person info");
         Log log = new Log(userDto.getUserId(), AnnUtils.getApiValue(PERSON_CONTROLLER_CLASS_NAME, "delete"));
         personService.deleteById(userDto.getId(), log);
         return ResultUtils.success();
@@ -97,7 +102,8 @@ public class PersonController {
     @ApiOperation(value = "人脸特征值提取", response = BigPictureData.class)
     @RequestMapping(value = "/extract_picture", method = RequestMethod.POST)
     public ResultVO<BigPictureData> faceFeatureExtract(@RequestParam("image") @ApiParam(name = "image", value = "图片") MultipartFile image,
-                                                       @RequestParam("userId") @ApiParam(name="userId",value="登录账号id",required=true) String userId) {
+                                                       @RequestParam("userId") @ApiParam(name = "userId", value = "登录账号id", required = true) String userId) {
+        log.info("start extract feature from picture");
         Log log = new Log(userId, AnnUtils.getApiValue(PERSON_CONTROLLER_CLASS_NAME, "faceFeatureExtract"));
         BigPictureData bigPictureData = personService.featureExtractByImage(image, log);
         if (null == bigPictureData) {
@@ -110,17 +116,15 @@ public class PersonController {
     @RequestMapping(value = "/search_picture", method = RequestMethod.POST)
     public ResultVO<SearchResult> searchPicture(
             @RequestBody @Valid SearchDto searchDto) {
-
+        log.info("start search picture by feature");
         Log log = new Log(searchDto.getUserId(), AnnUtils.getApiValue(PERSON_CONTROLLER_CLASS_NAME, "searchPicture"));
-
-        SingleSearchResult singleSearchResult = personService.search_picture(searchDto);
-
-        return  ResultUtils.success(singleSearchResult);
+        SingleSearchResult singleSearchResult = personService.search_picture(searchDto,log);
+        return ResultUtils.success(singleSearchResult);
     }
 
     @ApiOperation(value = "获取原图片")
     @RequestMapping(value = "/image", method = RequestMethod.GET)
-    public ResponseEntity<byte[]> getImage(@RequestParam("personid") @ApiParam(name="personid",value="personid",required=true) String personid) {
+    public ResponseEntity<byte[]> getImage(@RequestParam("personid") @ApiParam(name = "personid", value = "personid", required = true) String personid) {
         byte[] image = personService.getImage(personid);
         if (image == null || image.length == 0) {
             return ResponseEntity.badRequest().contentType(MediaType.IMAGE_JPEG).body(null);

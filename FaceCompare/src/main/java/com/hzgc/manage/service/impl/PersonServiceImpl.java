@@ -34,7 +34,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -74,6 +77,7 @@ public class PersonServiceImpl implements PersonService {
         page.setSize(personPage.getSize());
         page.setTotalElements(personPage.getTotalElements());
 
+        log.info("findPageByXmSfz num :" + (personPage.getNumber() + 1) + ", size:" + personPage.getSize() + ", total : " + personPage.getTotalElements());
         List<Person> content = personPage.getContent();
 
         for (Person person : content) {
@@ -111,7 +115,8 @@ public class PersonServiceImpl implements PersonService {
         String town = personDto.getSfz().substring(4, 6);
         Short year = IdcardUtil.getYearByIdCard(personDto.getSfz());
         String month = personDto.getSfz().substring(10, 12);
-        String path = hzgcConfig.getDir()+"/" + province + "/" + city + "/" + town + "/" + year + "/" + month + "/" + personDto.getSfz() + "/" + person.getId() + ".jpeg";
+        String path = hzgcConfig.getDir() + "/" + province + "/" + city + "/" + town + "/" + year + "/" + month + "/" + personDto.getSfz() + "/" + person.getId() + ".jpeg";
+        log.info("insert personid : " + person.getId() + " , dir path : " + path);
 //        String path = "D:\\" + province + "\\" + city + "\\" + town + "\\" + year + "\\" + month + "\\" + personDto.getSfz() + "\\" + person.getId() + ".jpeg";
         String tp = personDto.getTp();
 
@@ -137,6 +142,7 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public void deleteById(String id, Log logs) {
         if (StringUtils.isBlank(id)) throw new HzgcException(ExceptionCodeEnums.PARAM_ERROR);
+        log.info("delete id: " + id);
         //写入日志
         this.insertLog(logs);
         personRepository.deleteById(id);
@@ -157,7 +163,8 @@ public class PersonServiceImpl implements PersonService {
         String town = personDto.getSfz().substring(4, 6);
         Short year = IdcardUtil.getYearByIdCard(personDto.getSfz());
         String month = personDto.getSfz().substring(10, 12);
-        String path = hzgcConfig.getDir()+"/" + province + "/" + city + "/" + town + "/" + year + "/" + month + "/" + personDto.getSfz() + "/" + person.getId() + ".jpeg";
+        String path = hzgcConfig.getDir() + "/" + province + "/" + city + "/" + town + "/" + year + "/" + month + "/" + personDto.getSfz() + "/" + person.getId() + ".jpeg";
+        log.info("update personid : " + person.getId() + " , update path : " + path);
 //        String path = "D:\\" + province + "\\" + city + "\\" + town + "\\" + year + "\\" + month + "\\" + personDto.getSfz() + "\\" + person.getId() + ".jpeg";
         String tp = personDto.getTp();
         if (StringUtils.isNotBlank(tp) && StringUtils.isNotBlank(path)) {
@@ -172,13 +179,13 @@ public class PersonServiceImpl implements PersonService {
             person.setBittzz(bittzz);
         }
         personRepository.save(person);
-        client.addData(person.getId(),person.getTzz(),person.getSfz());
+        client.addData(person.getId(), person.getTzz(), person.getSfz());
 
         //写入日志
         this.insertLog(logs);
         personRepository.deleteById(personDto.getPeopleId());
 
-        client.delete(personDto.getPeopleId(),personDto.getSfz());
+        client.delete(personDto.getPeopleId(), personDto.getSfz());
 
     }
 
@@ -206,8 +213,8 @@ public class PersonServiceImpl implements PersonService {
         byte[] imageBytes = null;
         try {
             imageBytes = image.getBytes();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            log.error("image to Bytes has IO Exception");
         }
         String imageType = null;
         BigPictureData bigPictureData = new BigPictureData();
@@ -234,35 +241,40 @@ public class PersonServiceImpl implements PersonService {
 
             return bigPictureData;
         }
+        log.info("No face in the picture");
         return null;
     }
 
     @Override
-    public SingleSearchResult search_picture(SearchDto searchDto) {
+    public SingleSearchResult search_picture(SearchDto searchDto, Log log) {
         Integer page = searchDto.getPage();
         Integer size = searchDto.getSize();
-        log.info("PageSize : " + page + " Size : " + size);
-        if (searchDto.getSearchId() != null) {
-            log.info("Search Id : " + searchDto.getSearchId());
+        PersonServiceImpl.log.info("PageSize : " + page + " Size : " + size);
+        if (StringUtils.isNotBlank(searchDto.getSearchId())) {
+            PersonServiceImpl.log.info("Search Id is not null , search from memeory");
             SingleSearchResult singleSearchResult = memoryDao.getSearchRes(searchDto.getSearchId());
-            log.info("totle : " + singleSearchResult.getTotal());
+            SingleSearchResult singleSearchResult2 = new SingleSearchResult();
             List<PersonVO> list = singleSearchResult.getPersonVOS();
             List<PersonVO> personVOList = new ArrayList<>();
+
             for (int i = size * (page - 1); i < size * page; i++) {
-                personVOList.add(list.get(i));
+                if (i < singleSearchResult.getTotal()) {
+                    personVOList.add(list.get(i));
+                }
             }
-            singleSearchResult.setPersonVOS(personVOList);
-            return singleSearchResult;
+            singleSearchResult2.setSearchId(singleSearchResult.getSearchId());
+            singleSearchResult2.setTotal(singleSearchResult.getTotal());
+            singleSearchResult2.setPersonVOS(personVOList);
+            return singleSearchResult2;
         }
-        log.info("searchDTO");
-        log.info("sim::"+hzgcConfig.getSim());
+        PersonServiceImpl.log.info("start compare with bittzz and tzz, sim is " + hzgcConfig.getSim());
+        PersonServiceImpl.log.info("bittzz is :" + Arrays.toString(searchDto.getBittzz()));
+        PersonServiceImpl.log.info("tzz is :" + Arrays.toString(searchDto.getTzz()));
         CompareParam compareParam = new CompareParam(searchDto.getBittzz(), searchDto.getTzz(), hzgcConfig.getSim());
-        log.info("end compare");
         SearchResult compareresult = client.compare(compareParam);
         SearchResult.Record[] records = compareresult.getRecords();
-        log.info("Length : " + records.length);
-        SingleSearchResult singleSearchResult = new SingleSearchResult();
 
+        SingleSearchResult singleSearchResult = new SingleSearchResult();
         List<PersonVO> personVOS = new ArrayList<>();
         for (SearchResult.Record record : records) {
             try {
@@ -272,28 +284,31 @@ public class PersonServiceImpl implements PersonService {
                 personVO.setSim(record.getKey());
                 personVO.setTpbase(Base64Utils.getImageStr(person.getTp()));
                 personVOS.add(personVO);
-            }catch (Exception e){
-                log.info("Value " + record.getValue().toString());
-                log.info("Key " + record.getKey());
+            } catch (Exception e) {
+                PersonServiceImpl.log.error("Value " + record.getValue().toString());
+                PersonServiceImpl.log.error("Key " + record.getKey());
             }
-
         }
         singleSearchResult.setPersonVOS(personVOS);
         singleSearchResult.setSearchId(IdUtil.simpleUUID());
         singleSearchResult.setTotal(records.length);
 
-        log.info("personVOS::" + personVOS);
-
-
+        PersonServiceImpl.log.info("insert result into memory");
         memoryDao.insertSearchRes(singleSearchResult);
+        SingleSearchResult searchResult = new SingleSearchResult();
+        searchResult.setSearchId(singleSearchResult.getSearchId());
+        searchResult.setTotal(singleSearchResult.getTotal());
         if (records.length > size) {
             List<PersonVO> personVOList = new ArrayList<>();
-            for (int i = 0; i < size; i++) {
-                personVOList.add(personVOS.get(i));
+            for (int i = size * (page - 1); i < size * page; i++) {
+                if (i < singleSearchResult.getTotal()) {
+                    personVOList.add(personVOS.get(i));
+                }
             }
-            singleSearchResult.setPersonVOS(personVOList);
+            searchResult.setPersonVOS(personVOList);
         }
-        return singleSearchResult;
+        this.insertLog(log);
+        return searchResult;
     }
 
 
@@ -307,6 +322,7 @@ public class PersonServiceImpl implements PersonService {
         if (StringUtils.isNotBlank(tp)) {
             return Base64Utils.base64Str2BinArry(Base64Utils.getImageStr(tp));
         } else {
+            log.info("no ");
             return image = new byte[0];
         }
     }
@@ -316,9 +332,11 @@ public class PersonServiceImpl implements PersonService {
         String name = personQueryDto.getXm();
         String idCard = personQueryDto.getSfz();
         if (StringUtils.isNotBlank(name)) {
+            log.info("idcard is blank , search by name: " + name);
             return personRepository.findByXmLike("*" + name + "*", pageable);
         }
         if (StringUtils.isNotBlank(idCard)) {
+            log.info("name is blank , search by idcard " + idCard);
             return personRepository.findBySfzLike("*" + idCard + "*", pageable);
         }
         return personRepository.findAll(pageable);

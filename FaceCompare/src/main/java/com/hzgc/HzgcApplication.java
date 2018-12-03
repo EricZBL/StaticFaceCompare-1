@@ -10,7 +10,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class HzgcApplication {
 
     public static void main(String[] args) {
-        log.info(System.getProperty("java.library.path"));
         FaceFunction.init();
         SpringApplication.run(HzgcApplication.class, args);
 

@@ -12,8 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 /**
  * created by liang on 2018/11/16
  */
@@ -63,5 +61,5 @@ public interface PersonService {
      */
     BigPictureData featureExtractByImage(MultipartFile imageBin, Log log);
 
-    SingleSearchResult search_picture(SearchDto searchDto);
+    SingleSearchResult search_picture(SearchDto searchDto, Log log);
 }
