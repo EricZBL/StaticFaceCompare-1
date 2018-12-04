@@ -2,6 +2,7 @@ package com.hzgc.compare;
 
 import com.hzgc.compare.cache.FeatureCache;
 import com.hzgc.compare.es.ElasticSearchClient;
+import com.hzgc.jniface.FaceUtil;
 import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -59,6 +60,7 @@ public class ServiceMain {
             }
         }
 //        new Timer().schedule(new TimeToDelete(), 0, 24 * 60 * 60 * 1000);
+        FaceUtil.init(Config.HANGMING_SHOULD, Config.RES_FIRST_COMPARE - 1);
         log.info("Service start success.");
     }
 
