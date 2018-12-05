@@ -108,7 +108,7 @@ public class PersonServiceImpl implements PersonService {
 
         person.setId(IdUtil.simpleUUID());
 
-        if (IdcardUtil.isValidCard(personDto.getSfz())) throw new HzgcException(ExceptionCodeEnums.IDCARD_FORMAT_ERROR);
+        if (personDto.getSfz().length()!=18) throw new HzgcException(ExceptionCodeEnums.IDCARD_FORMAT_ERROR);
 
         String province = personDto.getSfz().substring(0, 2);
         String city = personDto.getSfz().substring(2, 4);
@@ -127,10 +127,12 @@ public class PersonServiceImpl implements PersonService {
 
             //TODO提取特征值
             FaceAttribute faceAttribute = FaceFunction.faceFeatureExtract(Base64Utils.base64Str2BinArry(tp), PictureFormat.JPG);
+            log.info(faceAttribute.toString());
             String bittzz = FaceUtil.bitFeautre2Base64Str(faceAttribute.getBitFeature());
             String ttz = FaceUtil.floatFeature2Base64Str(faceAttribute.getFeature());
             person.setTzz(ttz);
             person.setBittzz(bittzz);
+            log.info(ttz+ "=======" + bittzz);
 
         }
         personRepository.save(person);
@@ -157,7 +159,7 @@ public class PersonServiceImpl implements PersonService {
         BeanUtil.copyProperties(personDto, person);
         person.setId(IdUtil.simpleUUID());
 
-        if (IdcardUtil.isValidCard(personDto.getSfz())) throw new HzgcException(ExceptionCodeEnums.IDCARD_FORMAT_ERROR);
+        if (personDto.getSfz().length()!=18) throw new HzgcException(ExceptionCodeEnums.IDCARD_FORMAT_ERROR);
         String province = personDto.getSfz().substring(0, 2);
         String city = personDto.getSfz().substring(2, 4);
         String town = personDto.getSfz().substring(4, 6);

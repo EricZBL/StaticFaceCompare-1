@@ -43,13 +43,15 @@ services:
     restart: always
     runtime: nvidia
     environment:
-    - ZOOKEEPER_HOST=${ZK_HOST}:2181
-    - ES_HOST=${ES_HOST}:9300
+    - ZOOKEEPER_HOST=${ZK_HOST}:${ZK_PORT}
+    - ES_HOST=${ES_HOST}:${ES_PORT}
     - TZ=Asia/Shanghai
+    - LD_LIBRARY_PATH=/opt/GsFaceLib/face_libs
     network_mode: "host"
     volumes:
-    - /persondir:/persondir
+    - /opt/GsFaceLib:/opt/GsFaceLib
     - ${DOCKER_HOME}/compare/log:/log
+    - /usr/lib64/ld-linux-x86-64.so.2:/lib/ld-linux-x86-64.so.2
     - /etc/localtime:/etc/localtime:ro
 
 
@@ -61,7 +63,7 @@ services:
     container_name: compare-0
     restart: always
     environment:
-    - ZK_ADDRESS=${ZK_HOST}:${ZK_PORT}
+    - ZOOKEEPER_HOST=${ZK_HOST}:${ZK_PORT}
     - ES_HOST=${ES_HOST}
     - SERVICE_ID=0
     network_mode: "host"
@@ -78,7 +80,7 @@ services:
     container_name: compare-1
     restart: always
     environment:
-    - ZK_ADDRESS=${ZK_HOST}:${ZK_PORT}
+    - ZOOKEEPER_HOST=${ZK_HOST}:${ZK_PORT}
     - ES_HOST=${ES_HOST}
     - SERVICE_ID=1
     network_mode: "host"
@@ -95,7 +97,7 @@ services:
     container_name: compare-2
     restart: always
     environment:
-    - ZK_ADDRESS=${ZK_HOST}:${ZK_PORT}
+    - ZOOKEEPER_HOST=${ZK_HOST}:${ZK_PORT}
     - ES_HOST=${ES_HOST}
     - SERVICE_ID=2
     network_mode: "host"
@@ -111,9 +113,8 @@ services:
     - esearch
     container_name: compare-3
     restart: always
-    privileged: true
     environment:
-    - ZK_ADDRESS=${ZK_HOST}:${ZK_PORT}
+    - ZOOKEEPER_HOST=${ZK_HOST}:${ZK_PORT}
     - ES_HOST=${ES_HOST}
     - SERVICE_ID=3
     network_mode: "host"
@@ -121,16 +122,4 @@ services:
     - /data/static/log:/facecompare/log
     - /data/static/data:/facecompare/matedata
     - /data/static/conf:/facecompare/conf
-
-  vueweb:
-    image: ${DOCKER_REPOSITOR}/gosun/spirieyeweb-tool:1.0.0-SNAPSHOT
-    container_name: vueweb
-    depends_on:
-    - compare
-    restart: always
-    network_mode: "host"
-    extra_hosts:
-    - "gateway:${ZK_HOST}"
-    volumes:
-    - ${DOCKER_HOME}/mnt/web:/web
 
