@@ -89,7 +89,7 @@ function maketar(){
         cp ${SCRIPT_HOME_DIR}/docker-compose.yml FaceCompare
         cd ${SCRIPT_HOME_DIR}/FaceCompare
         docker save -o images.tar ${images}
-        cp ${PROJECT_HOME_DIR}/StaticInputTool/target/StaticInputTool-0.0.1-SNAPSHOTStaticInputTool-0.0.1-SNAPSHOT.jar ./
+        cp ${PROJECT_HOME_DIR}/StaticInputTool/target/StaticInputTool-0.0.1-SNAPSHOT.jar ./
         tar -zcf FaceCompare.tar ./*
         mv FaceCompare.tar ${PROJECT_HOME_DIR}
 }
