@@ -25,6 +25,9 @@ public class CompareOnePerson {
     }
 
     public SearchResult compare(byte[] bitFeature, float[] feature, float sim){
+        log.info("Feature : " + FaceUtil.floatFeature2Base64Str(feature));
+        log.info("BitFeature : " + FaceUtil.bitFeautre2Base64Str(bitFeature));
+        log.info("Sim : " + sim);
         long start = System.currentTimeMillis();
         byte[][] query = new byte[1][32];
         query[0] = bitFeature;
@@ -41,6 +44,8 @@ public class CompareOnePerson {
         if(compareResults.get(0).getPictureInfoArrayList() == null || compareResults.get(0).getPictureInfoArrayList().size() == 0){
             return new SearchResult();
         }
+        log.info("The result size of first compare is " + compareResults.get(0).getPictureInfoArrayList().size());
+
         ArrayList<FaceFeatureInfo> faceFeatureInfos = compareResults.get(0).getPictureInfoArrayList();
         List<String> ids = new ArrayList<>();
         for(FaceFeatureInfo faceFeatureInfo : faceFeatureInfos){
@@ -55,6 +60,7 @@ public class CompareOnePerson {
         res.take(RES_SECOND_COMPARE);
         long secondCompared = System.currentTimeMillis();
         log.info("The time second compare used is " + (secondCompared - readFeomES));
+        log.info("The result size of second compare is " + res.getRecords().length);
 
         return res;
 

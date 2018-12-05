@@ -17,7 +17,7 @@ public class FileManager {
     private int serviceId = Config.SERVICE_ID;
     private int serviceNum = Config.SERVICE_NUM;
     private int readFilePerThread = Config.FILES_PER_THREAD;
-    private FileStreamManager fileStreamManager;
+    private FileStreamManager fileStreamManager = FileStreamManager.getInstanse();
     private ExecutorService pool;
 
     public FileManager(){
@@ -25,7 +25,6 @@ public class FileManager {
     }
 
     public void loadData(){
-        fileStreamManager = FileStreamManager.getInstanse();
         long start = System.currentTimeMillis();
         List<BufferedReader> readerList = fileStreamManager.getReaders();
         List<FileReader> list = new ArrayList<>();
@@ -74,8 +73,8 @@ public class FileManager {
             log.info("Write the data " + idCard + "To File.");
             BufferedWriter writer = fileStreamManager.getWriter(city);
             try {
-                writer.newLine();
                 writer.write(info, 0, info.length());
+                writer.newLine();
                 writer.flush();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -83,5 +82,4 @@ public class FileManager {
             }
         }
     }
-
 }

@@ -74,7 +74,7 @@ public class Person implements Serializable {
     private String jg;
 
     /**
-     * base64图片（tp）
+     * 图片路径（tp）
      */
     private String tp;
 
@@ -212,7 +212,29 @@ public class Person implements Serializable {
         return bittzz;
     }
 
-    public void setBittzz(String bittzz) {
+        public void setBittzz(String bittzz) {
         this.bittzz = bittzz;
+    }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "id='" + id + '\'' +
+                ", sfz='" + sfz + '\'' +
+                ", xm='" + xm + '\'' +
+                ", xb='" + xb + '\'' +
+                ", mz='" + mz + '\'' +
+                ", sr='" + sr + '\'' +
+                ", ssssqx='" + ssssqx + '\'' +
+                ", jd='" + jd + '\'' +
+                ", mp='" + mp + '\'' +
+                ", mlxz='" + mlxz + '\'' +
+                ", csd='" + csd + '\'' +
+                ", cym='" + cym + '\'' +
+                ", jg='" + jg + '\'' +
+                ", tp='" + tp + '\'' +
+                ", tzz='" + tzz + '\'' +
+                ", bittzz='" + bittzz + '\'' +
+                '}';
     }
 }
