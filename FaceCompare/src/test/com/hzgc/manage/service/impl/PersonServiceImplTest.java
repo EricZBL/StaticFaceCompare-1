@@ -1,5 +1,6 @@
 package com.hzgc.manage.service.impl;
 
+import com.hzgc.manage.dao.PersonRepository;
 import com.hzgc.manage.entity.Person;
 import com.hzgc.manage.service.PersonService;
 import org.junit.Test;
@@ -23,6 +24,10 @@ public class PersonServiceImplTest {
     @Autowired
     private PersonService personService;
 
+
+    @Autowired
+    private PersonRepository personRepository;
+
     @Test
     public void save() {
 
@@ -40,6 +45,7 @@ public class PersonServiceImplTest {
 
     @Test
     public void searchBySfz() {
+        personRepository.deleteAll();
     }
 
     @Test

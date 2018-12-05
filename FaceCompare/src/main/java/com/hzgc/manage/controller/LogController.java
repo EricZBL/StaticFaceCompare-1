@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,8 +36,8 @@ public class LogController {
     @ApiOperation(value = "查询日志分页列表")
     @RequestMapping(value = "pageList", method = RequestMethod.POST)
     public ResultVO<PageUtils> pageList(@RequestBody @Valid LogQueryDto logQueryDto){
-
-            Pageable pageable = PageRequest.of(logQueryDto.getPage() - 1, logQueryDto.getSize());
+        Sort sort = new Sort(Sort.Direction.DESC, "createtime");
+        Pageable pageable = PageRequest.of(logQueryDto.getPage() - 1, logQueryDto.getSize(), sort);
             Page<Log> page = logService.findPage(logQueryDto, pageable);
 
             PageUtils<Log> logPage = new PageUtils<>();

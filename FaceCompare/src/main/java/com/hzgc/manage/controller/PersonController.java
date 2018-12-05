@@ -99,7 +99,7 @@ public class PersonController {
         return ResultUtils.success();
     }
 
-    @ApiOperation(value = "人脸特征值提取", response = BigPictureData.class)
+    @ApiOperation(value = "以图搜图", response = BigPictureData.class)
     @RequestMapping(value = "/extract_picture", method = RequestMethod.POST)
     public ResultVO<BigPictureData> faceFeatureExtract(@RequestParam("image") @ApiParam(name = "image", value = "图片") MultipartFile image,
                                                        @RequestParam("userId") @ApiParam(name = "userId", value = "登录账号id", required = true) String userId) {

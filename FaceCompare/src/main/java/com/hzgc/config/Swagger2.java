@@ -32,8 +32,6 @@ public class Swagger2 {
         return new ApiInfoBuilder()
                 //页面标题
                 .title("公安分局后台管理系统 RESTful API")
-                //创建人
-                .contact("梁世伟")
                 //版本号
                 .version("1.0")
                 //描述

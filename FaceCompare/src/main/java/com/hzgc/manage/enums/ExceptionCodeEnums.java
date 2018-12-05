@@ -11,7 +11,13 @@ public enum ExceptionCodeEnums {
 
     PARAM_ERROR(400 , "参数格式不正确"),
 
+    COMPARE_ERROR(400 , "图片匹配失败"),
+
+    PERSON_EXIST_ERROR(400 , "人员已存在"),
+
     IDCARD_FORMAT_ERROR(400 , "身份证格式不正确"),
+
+    IMAGE_FORMAT_ERROR(400 , "图片格式不正确"),
 
     PERSONID_ISNOT_ERROR(400 , "人口ID必传"),
 

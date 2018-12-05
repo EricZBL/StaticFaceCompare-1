@@ -41,6 +41,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+
 /**
  * created by liang on 18-11-16
  */
@@ -85,7 +86,11 @@ public class PersonServiceImpl implements PersonService {
             if (StringUtils.isBlank(tp)) {
                 continue;
             }
-            person.setTpbase(Base64Utils.getImageStr(tp));
+            try {
+                person.setTpbase(Base64Utils.getImageStr(tp));
+            } catch (Exception e) {
+                log.error(person.getId() + ":" + e.getMessage());
+            }
         }
         page.setContent(content);
 
@@ -108,7 +113,10 @@ public class PersonServiceImpl implements PersonService {
 
         person.setId(IdUtil.simpleUUID());
 
-        if (personDto.getSfz().length()!=18) throw new HzgcException(ExceptionCodeEnums.IDCARD_FORMAT_ERROR);
+        if (personDto.getSfz().length() != 18) throw new HzgcException(ExceptionCodeEnums.IDCARD_FORMAT_ERROR);
+
+        List<Person> personList = personRepository.findBySfz(person.getSfz());
+        if (personList.size() > 0) throw new HzgcException(ExceptionCodeEnums.PERSON_EXIST_ERROR);
 
         String province = personDto.getSfz().substring(0, 2);
         String city = personDto.getSfz().substring(2, 4);
@@ -130,15 +138,17 @@ public class PersonServiceImpl implements PersonService {
             log.info(faceAttribute.toString());
             String bittzz = FaceUtil.bitFeautre2Base64Str(faceAttribute.getBitFeature());
             String ttz = FaceUtil.floatFeature2Base64Str(faceAttribute.getFeature());
+            if (StringUtils.isBlank(bittzz) || StringUtils.isBlank(ttz))
+                throw new HzgcException(ExceptionCodeEnums.IMAGE_FORMAT_ERROR);
             person.setTzz(ttz);
             person.setBittzz(bittzz);
-            log.info(ttz+ "=======" + bittzz);
+            log.info(ttz + "=======" + bittzz);
 
         }
         personRepository.save(person);
+        client.addData(person.getId(), person.getBittzz(), person.getSfz());
         //写入日志
         this.insertLog(logs);
-        //client.addData();
     }
 
     @Override
@@ -147,19 +157,24 @@ public class PersonServiceImpl implements PersonService {
         log.info("delete id: " + id);
         //写入日志
         this.insertLog(logs);
+//        client.delete(id,personRepository.findById(id).get().getSfz());
         personRepository.deleteById(id);
     }
 
     @Override
     @Transactional
     public void update(PersonDto personDto, Log logs) {
+        personRepository.deleteById(personDto.getPeopleId());
+        List<Person> personList = personRepository.findBySfz(personDto.getSfz());
+        if (personList.size() > 0) throw new HzgcException(ExceptionCodeEnums.PERSON_EXIST_ERROR);
+
         if (StringUtils.isBlank(personDto.getPeopleId()))
             throw new HzgcException(ExceptionCodeEnums.PERSONID_ISNOT_ERROR);
         Person person = new Person();
         BeanUtil.copyProperties(personDto, person);
         person.setId(IdUtil.simpleUUID());
 
-        if (personDto.getSfz().length()!=18) throw new HzgcException(ExceptionCodeEnums.IDCARD_FORMAT_ERROR);
+        if (personDto.getSfz().length() != 18) throw new HzgcException(ExceptionCodeEnums.IDCARD_FORMAT_ERROR);
         String province = personDto.getSfz().substring(0, 2);
         String city = personDto.getSfz().substring(2, 4);
         String town = personDto.getSfz().substring(4, 6);
@@ -170,6 +185,7 @@ public class PersonServiceImpl implements PersonService {
 //        String path = "D:\\" + province + "\\" + city + "\\" + town + "\\" + year + "\\" + month + "\\" + personDto.getSfz() + "\\" + person.getId() + ".jpeg";
         String tp = personDto.getTp();
         if (StringUtils.isNotBlank(tp) && StringUtils.isNotBlank(path)) {
+
             byte[] bytes = Base64Utils.base64Str2BinArry(tp);
             ImageUtil.save(path, bytes);
             person.setTp(path);
@@ -177,16 +193,16 @@ public class PersonServiceImpl implements PersonService {
             FaceAttribute faceAttribute = FaceFunction.faceFeatureExtract(Base64Utils.base64Str2BinArry(tp), PictureFormat.JPG);
             String bittzz = FaceUtil.bitFeautre2Base64Str(faceAttribute.getBitFeature());
             String ttz = FaceUtil.floatFeature2Base64Str(faceAttribute.getFeature());
+            if (StringUtils.isBlank(bittzz) || StringUtils.isBlank(ttz))
+                throw new HzgcException(ExceptionCodeEnums.IMAGE_FORMAT_ERROR);
             person.setTzz(ttz);
             person.setBittzz(bittzz);
         }
         personRepository.save(person);
-        client.addData(person.getId(), person.getTzz(), person.getSfz());
+        client.addData(person.getId(), person.getBittzz(), person.getSfz());
 
         //写入日志
         this.insertLog(logs);
-        personRepository.deleteById(personDto.getPeopleId());
-
         client.delete(personDto.getPeopleId(), personDto.getSfz());
 
     }
@@ -248,7 +264,7 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public SingleSearchResult search_picture(SearchDto searchDto, Log log) {
+    public SingleSearchResult search_picture(SearchDto searchDto, Log logs) {
         Integer page = searchDto.getPage();
         Integer size = searchDto.getSize();
         PersonServiceImpl.log.info("PageSize : " + page + " Size : " + size);
@@ -272,10 +288,17 @@ public class PersonServiceImpl implements PersonService {
         PersonServiceImpl.log.info("start compare with bittzz and tzz, sim is " + hzgcConfig.getSim());
         PersonServiceImpl.log.info("bittzz is :" + Arrays.toString(searchDto.getBittzz()));
         PersonServiceImpl.log.info("tzz is :" + Arrays.toString(searchDto.getTzz()));
-        CompareParam compareParam = new CompareParam(searchDto.getBittzz(), searchDto.getTzz(), hzgcConfig.getSim());
-        SearchResult compareresult = client.compare(compareParam);
-        SearchResult.Record[] records = compareresult.getRecords();
 
+        CompareParam compareParam = new CompareParam(searchDto.getBittzz(), searchDto.getTzz(), hzgcConfig.getSim());
+        SearchResult compareresult =new SearchResult();
+        try{
+         compareresult = client.compare(compareParam);
+        }catch (Exception e){
+            log.error("exception:"+e.getMessage());
+            throw new HzgcException(ExceptionCodeEnums.COMPARE_ERROR);
+        }
+        SearchResult.Record[] records = compareresult.getRecords();
+        log.info("length::"+records.length);
         SingleSearchResult singleSearchResult = new SingleSearchResult();
         List<PersonVO> personVOS = new ArrayList<>();
         for (SearchResult.Record record : records) {
@@ -300,16 +323,14 @@ public class PersonServiceImpl implements PersonService {
         SingleSearchResult searchResult = new SingleSearchResult();
         searchResult.setSearchId(singleSearchResult.getSearchId());
         searchResult.setTotal(singleSearchResult.getTotal());
-        if (records.length > size) {
-            List<PersonVO> personVOList = new ArrayList<>();
-            for (int i = size * (page - 1); i < size * page; i++) {
-                if (i < singleSearchResult.getTotal()) {
-                    personVOList.add(personVOS.get(i));
-                }
+        List<PersonVO> personVOList = new ArrayList<>();
+        for (int i = size * (page - 1); i < size * page; i++) {
+            if (i < singleSearchResult.getTotal()) {
+                personVOList.add(personVOS.get(i));
             }
-            searchResult.setPersonVOS(personVOList);
         }
-        this.insertLog(log);
+        searchResult.setPersonVOS(personVOList);
+//        this.insertLog(log);
         return searchResult;
     }
 
