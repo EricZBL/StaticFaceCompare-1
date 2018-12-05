@@ -12,6 +12,7 @@ PROJECT_VERSION=`awk -v RS="</*version>" 'NR==2{print}' ${PROJECT_POM}`
 DEFAULT_DOCKER_REPOSTORY_ADDRESS=registry.cn-hangzhou.aliyuncs.com
 DOCKER_REPOSITORY_GOURP=hzgc
 MAKE_RESULT=$SCRIPT_HOME_DIR/make_result
+WEB_IMAGE=registry.cn-hangzhou.aliyuncs.com/gosun/spirieyeweb-tool:1.0.0-SNAPSHOT
 
 
 function find_make()
@@ -75,6 +76,23 @@ function modify_version(){
     done
 }
 
+function maketar(){
+    for name in `cat $MAKE_RESULT`
+        do
+            if [ -n "$name" ]; then
+                images=${name}\ ${images}
+            fi
+        done
+        images=${images}\ ${WEB_IMAGE}
+        mkdir -p ${SCRIPT_HOME_DIR}/FaceCompare
+        cp ${SCRIPT_HOME_DIR}/.env FaceCompare
+        cp ${SCRIPT_HOME_DIR}/docker-compose.yml FaceCompare
+        cd ${SCRIPT_HOME_DIR}/FaceCompare
+        docker save -o images.tar ${images}
+        cp ${PROJECT_HOME_DIR}/StaticInputTool/target/StaticInputTool-0.0.1-SNAPSHOTStaticInputTool-0.0.1-SNAPSHOT.jar ./
+        tar -zcf FaceCompare.tar ./*
+        mv FaceCompare.tar ${PROJECT_HOME_DIR}
+}
 
 function main()
 {
@@ -82,5 +100,6 @@ function main()
     find_make $PROJECT_HOME_DIR
     find_push
     modify_version $PROJECT_HOME_DIR
+    maketar
 }
 main

@@ -45,13 +45,10 @@ services:
     environment:
     - ZOOKEEPER_HOST=${ZK_HOST}:2181
     - ES_HOST=${ES_HOST}:9300
-    - TZ=Asia/Shanghai
     network_mode: "host"
     volumes:
     - /persondir:/persondir
     - ${DOCKER_HOME}/compare/log:/log
-    - /etc/localtime:/etc/localtime:ro
-
 
   compareservice-0:
     image: ${DOCKER_REPOSITOR}/hzgc/compare-static:${VERSION}

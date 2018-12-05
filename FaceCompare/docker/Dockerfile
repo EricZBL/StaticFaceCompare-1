@@ -1,5 +1,5 @@
 #指定镜像
-FROM registry.cn-hangzhou.aliyuncs.com/hzgc/java-all:8
+FROM registry.cn-hangzhou.aliyuncs.com/hzgc/gsfacelib:1.0
 
 #设置环境变量
 ENV PATH /usr/local/bin:$PATH
