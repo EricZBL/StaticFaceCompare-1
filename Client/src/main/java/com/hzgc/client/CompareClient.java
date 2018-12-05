@@ -54,6 +54,7 @@ public class CompareClient {
         List<SearchResult> searchResultList = searchResults.getResult();
         if(searchResultList == null || searchResultList.size() == 0){
             log.error("No result get.");
+            return new SearchResult();
         }
         SearchResult result = searchResultList.get(0);
         for(int i = 1 ; i < searchResultList.size(); i ++){

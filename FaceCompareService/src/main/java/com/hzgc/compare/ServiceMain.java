@@ -1,6 +1,7 @@
 package com.hzgc.compare;
 
 import com.hzgc.compare.cache.FeatureCache;
+import com.hzgc.compare.cache.TimeToCheckMemory;
 import com.hzgc.compare.es.ElasticSearchClient;
 import com.hzgc.jniface.FaceUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Random;
+import java.util.Timer;
 
 @Slf4j
 public class ServiceMain {
@@ -35,8 +37,6 @@ public class ServiceMain {
         ElasticSearchClient.connect();
 
         log.info("Load mate data");
-//        FileManager fileManager = new FileManager();
-//        fileManager.loadData();
         DealWithDelete dealWithDelete = new DealWithDelete();
         dealWithDelete.loadData();
 
@@ -61,6 +61,7 @@ public class ServiceMain {
         }
 //        new Timer().schedule(new TimeToDelete(), 0, 24 * 60 * 60 * 1000);
         FaceUtil.init(Config.HANGMING_SHOULD, Config.RES_FIRST_COMPARE - 1);
+//        new Timer().schedule(new TimeToCheckMemory(), 0, 30000);
         log.info("Service start success.");
     }
 

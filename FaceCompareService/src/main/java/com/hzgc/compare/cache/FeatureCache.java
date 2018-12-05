@@ -138,6 +138,15 @@ public class FeatureCache {
         return featureArr;
     }
 
+    public void checkMemory(){
+        if(featureSize != featureArr.length || featureArr.length != esIdArr.length){
+            log.error("The cache datas is not correct");
+            log.error("Mark size : " + featureSize);
+            log.error("Feature size : " + featureArr.length);
+            log.error("Ids size : " + esIdArr.length);
+        }
+    }
+
     public int getFeatureSizeMax(){
         return featureSizeMax;
     }

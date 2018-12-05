@@ -52,17 +52,29 @@ public class FaceCompareUtil {
     }
 
     public CompareResult faceCompareBitOne(String index, byte[][] featureList, int featureNum, byte[] queryList, int topN){
+        if(featureNum > featureList.length){
+            System.out.println("ERROR : The cache datas is not correct");
+            System.out.println("Mark size : " + featureNum);
+            System.out.println("Feature size : " + featureList);
+            return new CompareResult();
+        }
+//        featureNum = Integer.min(featureNum, featureList.length);
         for(long j = 0; j < featureNum; j++){
-            int dist = 0;
-            for(int i = 0; i < 32 ; i ++){
-                dist += hamming[~ (queryList[i] ^ featureList[(int) j][i]) & 0xFF];
-            }
-            if (dist > HANMING_THRESHOLD) {
-                int n = dist - HANMING_THRESHOLD;
-                if(indexes[n] <= SAVE_INDEX_MAX){
-                    arr[n][indexes[n]] = dist + (j << 9);
-                    indexes[n] ++;
+            try {
+                int dist = 0;
+                for(int i = 0; i < 32 ; i ++){
+                    dist += hamming[~ (queryList[i] ^ featureList[(int) j][i]) & 0xFF];
                 }
+                if (dist > HANMING_THRESHOLD) {
+                    int n = dist - HANMING_THRESHOLD;
+                    if(indexes[n] <= SAVE_INDEX_MAX){
+                        arr[n][indexes[n]] = dist + (j << 9);
+                        indexes[n] ++;
+                    }
+                }
+            }catch (Exception e){
+                System.out.println("Compare ERROR" + j);
+                e.printStackTrace();
             }
         }
 
@@ -72,21 +84,27 @@ public class FaceCompareUtil {
         int arrIndex = arr.length - 1;
         topN = Integer.min(topN, featureNum);
         while(resSize < topN && arrIndex >= 0){
-            long[] ress = arr[arrIndex];
-            int resIndexMax = indexes[arrIndex] - 1;
-            int resIndex = 0;
-            while(resIndex <= resIndexMax && resSize < topN){
-                long res = ress[resIndex];
-                long dist = res % 512;
-                long j = res / 512;
-                FaceFeatureInfo faceFeatureInfo = new FaceFeatureInfo();
-                faceFeatureInfo.setDist((int) dist);
-                faceFeatureInfo.setIndex((int) j);
-                faceFeatureInfos.add(faceFeatureInfo);
-                resIndex ++;
-                resSize ++;
+            try {
+                long[] ress = arr[arrIndex];
+                int resIndexMax = indexes[arrIndex] - 1;
+                int resIndex = 0;
+                while(resIndex <= resIndexMax && resSize < topN){
+                    long res = ress[resIndex];
+                    long dist = res % 512;
+                    long j = res / 512;
+                    FaceFeatureInfo faceFeatureInfo = new FaceFeatureInfo();
+                    faceFeatureInfo.setDist((int) dist);
+                    faceFeatureInfo.setIndex((int) j);
+                    faceFeatureInfos.add(faceFeatureInfo);
+                    resIndex ++;
+                    resSize ++;
+                }
+                arrIndex --;
+            }catch (Exception e){
+                System.out.println("Get Result ERROR " + arrIndex);
+                e.printStackTrace();
             }
-            arrIndex --;
+
         }
         compareResult.setPictureInfoArrayList(faceFeatureInfos);
         compareResult.setIndex(index);
