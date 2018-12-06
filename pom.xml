@@ -11,6 +11,7 @@
         <module>FaceCompareService</module>
         <module>FaceCompare</module>
         <module>Client</module>
+        <module>StaticInputTool</module>
     </modules>
     <packaging>pom</packaging>
 
