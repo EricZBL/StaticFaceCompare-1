@@ -37,7 +37,7 @@ public interface UserService {
     /**
      * 新增User实体
      */
-    void insert(UserCreateDto userCreateDto, Log log);
+    User insert(UserCreateDto userCreateDto, Log log);
 
     /**
      * 根据ID删除User实体

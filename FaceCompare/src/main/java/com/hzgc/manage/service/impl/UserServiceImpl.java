@@ -40,12 +40,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void insert(UserCreateDto userCreateDto, Log log) {
+    public User insert(UserCreateDto userCreateDto, Log log) {
         User user = new User();
         user.setUsername(userCreateDto.getUsername());
         user.setStatus(UserStatusEnums.ENABLE_USER_STATUS.getCode());
         this.save(user);
         this.insertLog(log);
+        return user;
 
     }
 

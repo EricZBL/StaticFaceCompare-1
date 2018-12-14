@@ -84,11 +84,12 @@ public class UserController {
 
     @ApiOperation(value = "新增账号")
     @RequestMapping(value = "save", method = RequestMethod.POST)
-    public ResultVO<String> insert(@RequestBody @Valid UserCreateDto userCreateDto) {
+    public ResultVO<User> insert(@RequestBody @Valid UserCreateDto userCreateDto) {
 
-        Log log = new Log(userCreateDto.getUserId(), AnnUtils.getApiValue(USER_CONTROLLER_CLASS_NAME, "insert"));
-                 userService.insert(userCreateDto,log);
-        return ResultUtils.success();
+        String apiname= AnnUtils.getApiValue(USER_CONTROLLER_CLASS_NAME, "insert");
+        Log log = new Log(userCreateDto.getUserId(),apiname+userCreateDto.getUsername());
+        User user = userService.insert(userCreateDto, log);
+        return ResultUtils.success(user);
     }
 
     @ApiOperation(value = "查询单一账号")

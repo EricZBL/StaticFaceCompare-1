@@ -238,6 +238,7 @@ public class PersonServiceImpl implements PersonService {
         BigPictureData bigPictureData = new BigPictureData();
         ArrayList<PictureData> smallPictures = new ArrayList<>();
         ArrayList<SmallImage> smallImages = FaceFunction.faceCheck(imageBytes, PictureFormat.JPG, PictureFormat.LEVEL_WIDTH_3);
+        log.info("smallImages.size(): " + smallImages.size() );
         if (null != smallImages && smallImages.size() > 0) {
             for (SmallImage smallImage : smallImages) {
                 PictureData pictureData = new PictureData();
@@ -260,7 +261,7 @@ public class PersonServiceImpl implements PersonService {
             return bigPictureData;
         }
         log.info("No face in the picture");
-        return null;
+        return bigPictureData;
     }
 
     @Override
